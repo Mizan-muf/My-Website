@@ -1,5 +1,7 @@
 # My Website
 
+Link:mizan-muf.github.io/My-Website
+
 Simple static personal website built with HTML, CSS, and JavaScript.
 
 ## Files
