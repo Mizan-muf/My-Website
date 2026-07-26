@@ -1,0 +1,327 @@
+% ============================================================
+%  Meezaan Chishty -- ATS-Optimised Resume
+%  Compiler: pdflatex or lualatex
+%  Notes: Single-column layout for reliable ATS text extraction.
+%         No complex tabularx / two-column environments.
+% ============================================================
+\documentclass[10pt,letterpaper]{article}
+
+% --- Packages -----------------------------------------------
+\usepackage[
+    top=0.5cm,
+    bottom=0.5cm,
+    left=1.0cm,
+    right=1.0cm,
+    footskip=0.2cm
+]{geometry}
+\usepackage{titlesec}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{amsmath}
+\usepackage{xurl}
+\usepackage[
+    pdftitle={Meezaan Chishty Resume},
+    pdfauthor={Meezaan Chishty},
+    colorlinks=true,
+    urlcolor=black,
+    linkcolor=black,
+    breaklinks=true
+]{hyperref}
+\usepackage{ifthen}
+\usepackage{microtype}
+\usepackage{iftex}
+
+% --- Font ---------------------------------------------------
+\ifPDFTeX
+  \input{glyphtounicode}
+  \pdfgentounicode=1
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\else
+  \usepackage{fontspec}
+  \setmainfont{Latin Modern Roman}
+\fi
+
+% --- Global Settings ----------------------------------------
+\pagestyle{empty}
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\urlstyle{same}
+
+% Section styling -- uppercase, ruled
+\titleformat{\section}
+  {\bfseries\large}
+  {}{0pt}{\MakeUppercase}[\vspace{0.04cm}\titlerule]
+\titlespacing{\section}{0pt}{0.3em}{0.12em}
+
+% Bullet style
+\renewcommand\labelitemi{$\bullet$}
+\setlist[itemize]{
+    topsep=0.05em,
+    itemsep=0.02em,
+    parsep=0em,
+    partopsep=0em,
+    leftmargin=1.5em
+}
+
+% --- Helpers ------------------------------------------------
+% Job header: \jobheader{Title}{Company}{Location}{Dates}
+\newcommand{\jobheader}[4]{%
+  \textbf{#1} (\textit{#4})\\
+  \textit{#2} \textemdash{} \textit{#3}
+  \vspace{0.04cm}
+}
+
+% Project header: \projheader{Name}{Year}
+\newcommand{\projheader}[2]{%
+  \textbf{#1} (\textit{#2})
+  \vspace{0.02cm}
+}
+
+% Education entry
+\newcommand{\eduentry}[4]{%
+  \textbf{#1} (\textit{#3})\\
+  \textit{#2} \hfill GPA: #4
+}
+
+% ============================================================
+\begin{document}
+
+% ==================== HEADER ================================
+\begin{center}
+  {\LARGE\bfseries Meezaan Chishty}\\[0.1cm]
+  {\normalsize Full Stack Engineer \textbullet{} AI/ML Engineer \textbullet{} Backend Developer}\\[0.12cm]
+  {\small
+    \href{mailto:syedmeezan905@gmail.com}{syedmeezan905@gmail.com}
+    \quad\textbullet\quad
+    +91 7426917505
+    \quad\textbullet\quad
+    Udaipur, Rajasthan, India
+  }\\[0.04cm]
+  {\small
+    \href{https://www.linkedin.com/in/syed-mohammed-meezaan-chishty-19a4b0338}{linkedin.com/in/syed-mohammed-meezaan-chishty}
+    \quad\textbullet\quad
+    \href{https://github.com/Mizan-muf}{github.com/Mizan-muf}
+    \quad\textbullet\quad
+    \href{https://mizanchishty.ddns.net}{mizanchishty.ddns.net}
+  }
+\end{center}
+
+\vspace{0.08cm}
+
+% ==================== PROFESSIONAL SUMMARY ==================
+\section{Professional Summary}
+
+\noindent
+Full Stack and AI/ML engineer with hands-on experience building production systems ---
+from FastAPI microservices and React/Next.js frontends to LLM pipelines, RAG architectures,
+and real-time data platforms. I have shipped systems used by real clients, fine-tuned models,
+and written the infrastructure code to keep them running. Currently pursuing an MCA at
+Jamia Hamdard University (GPA 8.95/10) while working full-time; looking for a team where
+engineering craft and real-world impact both matter.
+
+\vspace{0.05cm}
+
+% ==================== EDUCATION ============================
+\section{Education}
+
+\eduentry
+  {Jamia Hamdard University}
+  {Master of Computer Applications (MCA), Computer Science}
+  {Jan 2025 -- Present}
+  {8.95 / 10}
+
+\vspace{0.2cm}
+
+\eduentry
+  {Manipal University Jaipur}
+  {Bachelor of Computer Applications (BCA)}
+  {Oct 2021 -- Apr 2024}
+  {8.88 / 10 (approx. 3.55 / 4.00)}\\
+  \small\textit{Dean\textquotesingle s List Awardee --- Highest GPA in cohort}
+
+\vspace{0.05cm}
+
+% ==================== EXPERIENCE ============================
+\section{Experience}
+
+\jobheader{Full Stack AI/ML Engineer}{FBSPL}{India -- Udaipur}{Feb 2025 -- Present}
+\begin{itemize}
+  \item Architected and shipped \textbf{FBSPLAI} --- a production-grade AI insurance sales platform
+  with \textbf{3 Next.js portals} and \textbf{10 FastAPI microservices}, serving live clients;
+  full stack ownership from database schema to UI components.
+  \item Built an ACORD document extraction pipeline using computer vision, OCR, and visual document
+  models --- replacing a largely manual process and feeding structured data into downstream
+  reporting systems.
+  \item Delivered a distributed real-time monitoring platform across \textbf{700+ endpoints} with
+  sub-\textbf{200\,ms} WebSocket updates, giving operations teams live visibility they previously lacked.
+  \item Currently leading development of an insurance-domain LLM fine-tuned on proprietary data,
+  using Transformer architecture, RAG, and LangChain --- \textbf{45\%} complete.
+  \item Introduced asynchronous task queues (Celery + Redis) and containerised all services with
+  Docker, significantly improving deployment reliability and developer iteration speed.
+\end{itemize}
+
+\vspace{0.12cm}
+
+\jobheader{Python Developer}{NeoPanda Tech}{China -- Shenzhen (Remote)}{Mar 2024 -- Feb 2025}
+\begin{itemize}
+  \item Built and maintained RESTful APIs and backend services in Python;
+  integrated AI/ML capabilities into production data workflows
+  \item Built a robust web crawler and scraper suite with proxy pooling, retry logic, and browser
+  fallback (Playwright), ingesting \textbf{5,000+ daily articles} from \textbf{50+ regional news sources}
+  into a SQLite pipeline.
+  \item Built a RAG-based news intelligence system with vector embeddings and an autonomous AI agent,
+  achieving \textbf{99.9\%} deduplication and \textbf{85\%} reduction in manual newsletter curation time.
+\end{itemize}
+
+\vspace{0.12cm}
+
+\jobheader{AI/ML Engineering Intern}{IIT Roorkee}{India}{Jan 2024 -- Feb 2024}
+\begin{itemize}
+  \item Trained and evaluated supervised ML models (Scikit-Learn, Pandas, NLP) across three tasks:
+  sentiment analysis, emotion classification, and small-business sales forecasting;
+  achieved \textbf{>85\%} classification accuracy on validation sets.
+  \item Benchmarked Small Language Models (SLMs) against larger counterparts to guide practical
+  model selection decisions for resource-constrained deployments.
+\end{itemize}
+
+\vspace{0.12cm}
+
+\jobheader{Lead Product Engineer}{Zume, Inc.}{USA -- California (Remote)}{Apr 2023 -- Mar 2024}
+\begin{itemize}
+  \item Led AI application and ML feature development across an Agile/Scrum workflow;
+  owned end-to-end delivery for \textbf{3+ product features} with cross-functional stakeholders.
+  \item Designed OpenAI-powered voice analytics pipelines, LightGBM sales forecasting, and a
+  RESTful backend for \textbf{Vocalytics-V0.3} --- a voice-driven BI tool for sales teams.
+\end{itemize}
+
+\vspace{0.05cm}
+
+% ==================== SKILLS ================================
+\section{Technical Skills}
+
+\noindent
+\textbf{Languages:} Python, JavaScript, TypeScript, Java, C\#, SQL, Go, Bash, HTML5, CSS3\\[0.08cm]
+\textbf{Frontend / Full-Stack:} React.js, Next.js 14, Tailwind CSS, Vite, Turborepo, Radix UI,
+WebSockets, REST APIs, GraphQL, Responsive Design\\[0.08cm]
+\textbf{Backend \& APIs:} FastAPI, Flask, Node.js, Express.js, Django, Socket.IO, Microservices
+Architecture, JWT Authentication, RBAC, Rate Limiting, Celery, Pydantic\\[0.08cm]
+\textbf{AI / ML \& Data Science:} Large Language Models (LLM), Transformer Architecture,
+Model Fine-Tuning, Retrieval\mbox{-}Augmented Generation (RAG), LangChain, LangGraph,
+Prompt Engineering, OpenAI API, Google Gemini, PyTorch, TensorFlow, Scikit-Learn,
+Computer Vision, OCR, NLP, Pandas, NumPy, LightGBM\\[0.08cm]
+\textbf{Vector Databases:} pgvector, Qdrant, Weaviate, Pinecone, Milvus, Elasticsearch\\[0.08cm]
+\textbf{Databases:} PostgreSQL, MongoDB, MySQL, Redis, SQLite\\[0.08cm]
+\textbf{DevOps / Cloud / MLOps:} AWS (EC2, S3, ECS, CloudWatch), Docker, Kubernetes,
+Nginx, Git, Linux, CI/CD Pipelines, Agile, Scrum
+
+\vspace{0.05cm}
+
+% ==================== PROJECTS ==============================
+\section{Projects}
+
+\projheader{FBSPLAI --- AI-Powered Insurance Sales Platform}{2025}
+\begin{itemize}
+  \item \textit{Source code proprietary / NDA. Live at \textbf{fbsplai.com}.}
+  \item Full-stack AI insurance sales platform: \textbf{3 Next.js 14 portals} (client, admin, AI chat)
+  sharing a Turborepo monorepo, Radix UI component library, and Tailwind CSS design system.
+  \item \textbf{10 FastAPI microservices}: document extraction (LangChain/LangGraph agents),
+  Quoteflow engine, loss-run reporting, AI chat, document renaming, quote comparison, and an API
+  gateway --- orchestrated with Docker Compose, Celery, MongoDB, and Redis.
+  \item Multi-provider LLM integration (OpenAI + Google Gemini + Cloud Vision OCR)
+  for document intelligence, quote analysis, and conversational AI
+  \item Deployed on AWS EC2 behind Nginx with JWT/RBAC, rate limiting, and async task queues
+\end{itemize}
+
+\vspace{0.08cm}
+
+\projheader{Vocalytics-V0.3}{2024}
+\begin{itemize}
+  \item Voice-driven sales analytics platform: converts spoken commands into Plotly BI workflows
+  and natural-language summaries using OpenAI GPT-4.
+  \item Implemented secure AST-validated code execution, LightGBM forecasting, and CSV ingestion
+  with encoding detection; packaged for Windows desktop with cx\_Freeze.
+  \item \textbf{Stack:} Python, Flask, OpenAI API, LightGBM, Pandas, Plotly, SpeechRecognition.
+  \quad \textbf{GitHub:} \href{https://github.com/Mizan-muf/Vocalytics-V0.3}{Vocalytics-V0.3}
+\end{itemize}
+
+\vspace{0.08cm}
+
+\projheader{Intelli-News v1.1 --- RAG News Intelligence Pipeline}{2024}
+\begin{itemize}
+  \item Crawled and ingested \textbf{5,000+ daily articles} from \textbf{50+ regional sources}
+  with proxy pooling, retry logic, and Playwright browser fallback.
+  \item Built a RAG-based vector embedding system with an autonomous AI agent achieving
+  \textbf{99.9\% deduplication} and \textbf{85\% reduction} in manual curation effort.
+  \item \textbf{Stack:} Python, LangChain, RAG, Vector Databases, SQLite, Scrapy, Playwright.
+  \quad \textbf{GitHub:} \href{https://github.com/Mizan-muf/Newsletter-Intelli-version-1.1.0}{Newsletter-Intelli-v1.1}
+\end{itemize}
+
+\vspace{0.08cm}
+
+\projheader{ACORD Forms Extraction Pipeline}{2025}
+\begin{itemize}
+  \item Layout-aware document extraction pipeline using computer vision, visual document models,
+  and OCR for structured text, tables, checkboxes, and form fields from ACORD insurance documents
+  \item Self-learning iteration loop with visual-model fine-tuning and version switching for safe rollback
+  \item \textbf{Stack:} Python, Computer Vision, OCR, FastAPI, PostgreSQL, Pydantic
+\end{itemize}
+
+\vspace{0.05cm}
+\noindent\textbf{More projects:} \href{https://mizanchishty.ddns.net/\#projects}{mizanchishty.ddns.net/\#projects}
+
+\vspace{0.05cm}
+
+% ==================== CERTIFICATIONS =======================
+\section{Certifications}
+
+\noindent
+\textbf{AI / Machine Learning:}
+\href{https://www.linkedin.com/learning/certificates/9fd3c7aac08df00e7bd910ba2ddf330de3ddd54b14f48c74923e55dc633d096a}{Hands-On AI: Building LLM-Powered Apps},
+\href{https://www.linkedin.com/learning/certificates/699efc9ed8fb2419bc9c506e3cb97cf91e540e8d88a3c0f7b9b9dbe8b59dc786}{Introduction to Artificial Intelligence},
+\href{https://www.linkedin.com/learning/certificates/6b11ba7b0547ec739724ecda0df645128b7741fbfc9a2d458a8a850cf9be384f}{Deep Learning with TensorFlow},
+\href{https://www.linkedin.com/learning/certificates/71a636520507579ad303e5b71618ea025b971521e967830719874201ce2de906}{Deep Learning: Model Optimization \& Tuning},
+\href{https://www.linkedin.com/learning/certificates/b79f4dde22949acc6dced9795615c8d63376648cf0cb27f03d97007fbadeb957}{Google Cloud Platform for ML},
+\href{https://www.linkedin.com/learning/certificates/2dd54d1e822f5411bd44cf1693401ff446ea4c2dffa195e85fafc7eb75fb5e7b}{R for Data Science}\\[0.1cm]
+
+\noindent
+\textbf{Generative AI:}
+\href{https://www.linkedin.com/learning/certificates/062a1453c1af811329321b641d983520828618bf8d4fb77beb0d0f79912ceb1a}{Career Essentials in Generative AI (Microsoft \& LinkedIn)},
+\href{https://www.linkedin.com/learning/certificates/207fe0df385e66e87ab1f810a442a463a92ef8701b7caa2a12009f0612ccd4f7}{What Is Generative AI?},
+\href{https://www.linkedin.com/learning/certificates/d4c6d02497bb3aa0cd99ae76312da50ea11390796ca7455257982430e61358a5}{Generative AI: Evolution of Online Search},
+\href{https://www.linkedin.com/learning/certificates/ee072711312b59d98735eb368c9d759385e7790d543e6506d109a3bfbe07bbb4}{Ethics in the Age of Generative AI}\\[0.1cm]
+
+\noindent
+\textbf{Backend \& Web:}
+\href{https://www.linkedin.com/learning/certificates/7cbcd4d0c502bc42a5c3d0d964295ecc5578787d12bb9cabec34adad3184a6f0}{Django Essential Training},
+\href{https://www.linkedin.com/learning/certificates/d4c6d02497bb3aa0cd99ae76312da50ea11390796ca7455257982430e61358a5}{Node.js Essential Training},
+\href{https://coursera.org/verify/KVKSX7TK74VA}{Introduction to HTML},
+\href{https://coursera.org/verify/FDFLFYXPHMVJ}{Introduction to CSS},
+\href{https://www.coursera.org/account/accomplishments/records/YV9HQFZJ888P}{TCP/IP and Advanced Topics}\\[0.1cm]
+
+\noindent
+\textbf{OOP \& Java:}
+\href{https://www.coursera.org/account/accomplishments/specialization/W45B4GT9JDVN}{Core Java Specialization} \textit{(LearnQuest)},
+\href{https://www.coursera.org/account/accomplishments/records/TH96V3VSDRMY}{Intro to Java},
+\href{https://www.coursera.org/account/accomplishments/records/GJJZMWARA48V}{Intro to OOP with Java},\\
+\href{https://www.coursera.org/account/accomplishments/records/MCJ6NDFM9R2Z}{OOP Hierarchies in Java},
+\href{https://www.coursera.org/account/accomplishments/records/XM65WYFHTWCV}{Java Class Library},
+\href{https://www.coursera.org/account/accomplishments/records/RNJL26YLE6PE}{Fundamentals of Data Warehousing}\\[0.1cm]
+
+\noindent
+\textbf{Game Dev \& C\#:}
+\href{https://coursera.org/verify/specialization/BW5XKXSTZPNE}{C\# for Unity Specialization} \textit{(Univ. of Colorado)},
+\href{https://coursera.org/verify/FZMJBXQJ4MMB}{Intro to C\# and Unity},
+\href{https://coursera.org/verify/9DCFWKXMJWX8}{More C\# and Unity},
+\href{https://coursera.org/verify/CWUJQVQ2F3Y3}{Intermediate OOP for Unity},
+\href{https://www.coursera.org/account/accomplishments/records/TRJK53CRP2P4}{Intro to Game Design} \textit{(CalArts)}\\[0.1cm]
+
+\noindent
+\textbf{Productivity \& Tools:}
+\href{https://www.linkedin.com/learning/certificates/4e2bb0ad9a4bbaa4aacd3ef330606cbe0a0288fe2810625598d7053fad117e71}{Streamlining Work with Microsoft Copilot},
+\href{https://www.linkedin.com/learning/certificates/31b303a1c3ff10ca975b902b514e43cc609c64911e21d0f617fa1f26893015db}{Learning Microsoft 365 Copilot for Work}
+
+\end{document}
