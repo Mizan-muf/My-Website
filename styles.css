@@ -90,7 +90,7 @@ body.light .bg-grid {
 
 .abstract-1 {
   top: 15%;
-  left: 2%;
+  right: 10%;
   width: 150px;
   animation: float 6s ease-in-out infinite;
 }
