@@ -9,7 +9,7 @@
   --accent: #7c9cff;
   --accent-2: #5eead4;
   --shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
-  --container: 1120px;
+  --container: 1400px;
   --radius: 12px;
 }
 
@@ -284,6 +284,13 @@ body.light .site-header {
   box-shadow: var(--shadow);
   border-radius: var(--radius);
   backdrop-filter: blur(18px);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent);
 }
 
 .stat-card {
@@ -387,11 +394,8 @@ body.light .site-header {
 .skills-layout,
 .edu-grid {
   display: grid;
-  gap: 1rem;
-}
-
-.project-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .project-card {
