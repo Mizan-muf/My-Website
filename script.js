@@ -1,20 +1,34 @@
 const themeToggle = document.getElementById("themeToggle");
+const sidebarThemeToggle = document.getElementById("sidebarThemeToggle");
 const body = document.body;
-const savedTheme = localStorage.getItem("theme");
+let savedTheme = localStorage.getItem("theme");
 
-if (savedTheme === "light") {
-  body.classList.add("light");
-  themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+// Default to light
+if (savedTheme === null) {
+  savedTheme = "light";
 }
 
-themeToggle.addEventListener("click", () => {
+if (savedTheme === "dark") {
+  body.classList.remove("light");
+  if (themeToggle) themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+  if (sidebarThemeToggle) sidebarThemeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+} else {
+  body.classList.add("light");
+  if (themeToggle) themeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
+  if (sidebarThemeToggle) sidebarThemeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
+}
+
+function toggleTheme() {
   body.classList.toggle("light");
   const isLight = body.classList.contains("light");
   localStorage.setItem("theme", isLight ? "light" : "dark");
-  themeToggle.innerHTML = isLight
-    ? '<i class="fa-solid fa-sun"></i>'
-    : '<i class="fa-solid fa-moon"></i>';
-});
+  const icon = isLight ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
+  if (themeToggle) themeToggle.innerHTML = icon;
+  if (sidebarThemeToggle) sidebarThemeToggle.innerHTML = icon;
+}
+
+if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
+if (sidebarThemeToggle) sidebarThemeToggle.addEventListener("click", toggleTheme);
 
 const revealElements = document.querySelectorAll(".reveal");
 
@@ -33,29 +47,24 @@ const revealObserver = new IntersectionObserver(
 
 revealElements.forEach((el) => revealObserver.observe(el));
 
-const sections = document.querySelectorAll("main section[id], main[id='top']");
-const dockLinks = document.querySelectorAll(".dock-item");
+// Sidebar Logic
+const menuToggle = document.getElementById("menuToggle");
+const sidebar = document.getElementById("sidebar");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+const sidebarClose = document.getElementById("sidebarClose");
+const sidebarLinks = document.querySelectorAll(".sidebar-link");
 
-function setActiveDock() {
-  const scrollY = window.scrollY + window.innerHeight * 0.28;
-  let current = "top";
-
-  document.querySelectorAll("section[id]").forEach((section) => {
-    const top = section.offsetTop;
-    const height = section.offsetHeight;
-    if (scrollY >= top && scrollY < top + height) {
-      current = section.id;
-    }
-  });
-
-  if (window.scrollY < 120) {
-    current = "top";
-  }
-
-  dockLinks.forEach((link) => {
-    link.classList.toggle("active", link.dataset.section === current);
-  });
+function openSidebar() {
+  if (sidebar) sidebar.classList.add("open");
+  if (sidebarOverlay) sidebarOverlay.classList.add("open");
 }
 
-window.addEventListener("scroll", setActiveDock);
-window.addEventListener("load", setActiveDock);
+function closeSidebar() {
+  if (sidebar) sidebar.classList.remove("open");
+  if (sidebarOverlay) sidebarOverlay.classList.remove("open");
+}
+
+if (menuToggle) menuToggle.addEventListener("click", openSidebar);
+if (sidebarClose) sidebarClose.addEventListener("click", closeSidebar);
+if (sidebarOverlay) sidebarOverlay.addEventListener("click", closeSidebar);
+if (sidebarLinks) sidebarLinks.forEach(link => link.addEventListener("click", closeSidebar));

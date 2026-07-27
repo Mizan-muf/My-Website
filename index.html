@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
   />
   <link
@@ -20,29 +20,61 @@
   />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  <div class="bg-orb orb-1"></div>
-  <div class="bg-orb orb-2"></div>
+<body class="light">
   <div class="bg-grid"></div>
+  <img src="assets/blob_bg-min.png" class="mmm-shape blob-1" alt="" aria-hidden="true">
+  <img src="assets/Abstract-3d-Shape---10.png" class="mmm-shape abstract-1" alt="" aria-hidden="true">
+  <img src="assets/Abstract-3d-Shape---18.png" class="mmm-shape abstract-2" alt="" aria-hidden="true">
+  <img src="assets/Abstract-3d-Shape---36.png" class="mmm-shape abstract-3" alt="" aria-hidden="true">
+  <img src="assets/Abstract-3d-Shape---59.png" class="mmm-shape abstract-4" alt="" aria-hidden="true">
+
 
   <header class="site-header">
     <div class="container nav-wrap">
       <a class="brand" href="#top">Meezaan Chishty</a>
 
-      <nav class="top-nav">
-        <a href="#about">About</a>
-        <a href="#experience">Experience</a>
+      <nav class="top-nav desktop-only">
         <a href="#projects">Projects</a>
+        <a href="#experience">Experience</a>
         <a href="#skills">Skills</a>
         <a href="#certifications">Certificates</a>
-        <a href="#contact">Contact</a>
       </nav>
 
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <i class="fa-solid fa-moon"></i>
+      <div class="header-actions desktop-only">
+        <a href="mailto:syedmeezan905@gmail.com" class="header-icon" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
+        <a href="tel:+917426917505" class="header-icon" aria-label="Phone"><i class="fa-solid fa-phone"></i></a>
+        <a href="https://github.com/Mizan-muf" target="_blank" rel="noreferrer" class="header-icon" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+        <a href="https://www.linkedin.com/in/syed-mohammed-meezaan-chishty-19a4b0338" target="_blank" rel="noreferrer" class="header-icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+
+      <button class="menu-toggle mobile-only" id="menuToggle" aria-label="Toggle menu">
+        <i class="fa-solid fa-bars"></i>
       </button>
     </div>
   </header>
+
+  <div class="sidebar" id="sidebar">
+    <button class="sidebar-close" id="sidebarClose"><i class="fa-solid fa-xmark"></i></button>
+    <nav class="sidebar-nav">
+        <a href="#projects" class="sidebar-link">Projects</a>
+        <a href="#experience" class="sidebar-link">Experience</a>
+        <a href="#skills" class="sidebar-link">Skills</a>
+        <a href="#certifications" class="sidebar-link">Certificates</a>
+    </nav>
+    <div class="sidebar-actions">
+        <a href="mailto:syedmeezan905@gmail.com" class="header-icon" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
+        <a href="tel:+917426917505" class="header-icon" aria-label="Phone"><i class="fa-solid fa-phone"></i></a>
+        <a href="https://github.com/Mizan-muf" target="_blank" rel="noreferrer" class="header-icon" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+        <a href="https://www.linkedin.com/in/syed-mohammed-meezaan-chishty-19a4b0338" target="_blank" rel="noreferrer" class="header-icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+        <button class="theme-toggle" id="sidebarThemeToggle" aria-label="Toggle theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <main id="top">
     <section class="hero section">
@@ -62,25 +94,6 @@
             <a class="btn btn-secondary" href="resume/meezaan_chishty_resume.pdf" target="_blank" rel="noreferrer"><i class="fa-solid fa-file-pdf"></i> Resume</a>
             <a class="btn btn-secondary" href="mailto:syedmeezan905@gmail.com">Contact Me</a>
           </div>
-
-          <div class="meta-row">
-            <a href="mailto:syedmeezan905@gmail.com">
-              <i class="fa-regular fa-envelope"></i>
-              syedmeezan905@gmail.com
-            </a>
-            <a href="tel:+917426917505">
-              <i class="fa-solid fa-phone"></i>
-              +91 7426917505
-            </a>
-            <a href="https://github.com/Mizan-muf" target="_blank" rel="noreferrer">
-              <i class="fa-brands fa-github"></i>
-              GitHub
-            </a>
-            <span>
-              <i class="fa-solid fa-location-dot"></i>
-              Udaipur, Rajasthan
-            </span>
-          </div>
         </div>
 
         <div class="hero-card reveal delay-1">
@@ -98,104 +111,6 @@
       </div>
     </section>
 
-    <section id="about" class="section">
-      <div class="container">
-        <div class="section-head reveal">
-          <p class="section-kicker">About</p>
-          <h2>Professional Summary</h2>
-        </div>
-
-        <div class="card summary-card reveal delay-1">
-          <p>
-            AI/ML Engineer and Python developer with experience across backend APIs,
-            document extraction, automation pipelines, LLM tooling, and data products.
-            I work across product and engineering boundaries to build systems that are
-            practical, scalable, and aligned with real business workflows.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section id="experience" class="section">
-      <div class="container">
-        <div class="section-head reveal">
-          <p class="section-kicker">Career</p>
-          <h2>Experience</h2>
-        </div>
-
-        <div class="timeline">
-          <article class="timeline-item card reveal">
-            <div class="timeline-top">
-              <div>
-                <h3>AI/ML Engineer</h3>
-                <p class="company">FBSPL</p>
-              </div>
-              <div class="timeline-meta">
-                <span>Feb 2025— Present</span>
-                <span>India · Udaipur</span>
-              </div>
-            </div>
-            <ul>
-              <li>Built internal AI tooling, ACORD extraction workflows, and automated reporting pipelines for document and operations automation.</li>
-              <li>Delivered a distributed monitoring platform across <strong>700+ endpoints</strong> with sub-<strong>200ms</strong> live updates, improving visibility and reducing MTTR.</li>
-              <li>Improved throughput and reliability using Redis-backed queues and Elasticsearch/SQL optimization, reducing P95 latency by <strong>45%</strong>.</li>
-            </ul>
-          </article>
-
-          <article class="timeline-item card reveal delay-1">
-            <div class="timeline-top">
-              <div>
-                <h3>Python Developer</h3>
-                <p class="company">NeoPanda Tech</p>
-              </div>
-              <div class="timeline-meta">
-                <span>Mar 2024 — Feb 2025</span>
-                <span>China · Shenzhen [Remote]</span>
-              </div>
-            </div>
-            <ul>
-              <li>Developing backend APIs and Python automation for data-driven applications, focused on scalable services and structured pipelines.</li>
-              <li>Contributing to <strong>Intelli-News</strong> through API integration, crawler/scraper workflows, and ingestion automation for newsletter generation.</li>
-            </ul>
-          </article>
-
-          <article class="timeline-item card reveal">
-            <div class="timeline-top">
-              <div>
-                <h3>Lead Product Engineer</h3>
-                <p class="company">Zume, Inc.</p>
-              </div>
-              <div class="timeline-meta">
-                <span>Apr 2023 — Mar 2024</span>
-                <span>USA · California [Remote]</span>
-              </div>
-            </div>
-            <ul>
-              <li>Led product development for AI/data applications, owning architecture, feature delivery, and end-to-end execution.</li>
-              <li>Contributed to <strong>Vocalytics-V0.3</strong>, including OpenAI-powered analytics workflows, forecasting features, and backend design.</li>
-            </ul>
-          </article>
-
-          <article class="timeline-item card reveal delay-1">
-            <div class="timeline-top">
-              <div>
-                <h3>AI Intern</h3>
-                <p class="company">IIT Roorkee</p>
-              </div>
-              <div class="timeline-meta">
-                <span>Jan 2024 — Feb 2024</span>
-                <span>India</span>
-              </div>
-            </div>
-            <ul>
-              <li>Built ML models for sentiment/emotion prediction and small-business sales forecasting.</li>
-              <li>Worked with SLM models to improve result quality and experimentation outcomes.</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
-
     <section id="projects" class="section">
       <div class="container">
         <div class="section-head reveal">
@@ -205,6 +120,35 @@
 
         <div class="project-grid">
           <article class="project-card card reveal">
+            <div class="project-top">
+              <h3>Hippo Cortex Retrieve &mdash; Public Research</h3>
+              <span class="tag">2026</span>
+            </div>
+            <p>
+              An open-source research architecture for long-term AI memory and context retrieval.
+            </p>
+            <p>
+              Integrates a Qdrant hybrid vector store, a Kuzu graph database for entity relationships, and an immutable Markdown file store, powered by local LLMs via Ollama.
+            </p>
+            <div class="stack">
+              <span>Python</span>
+              <span>Qdrant</span>
+              <span>Kuzu Graph</span>
+              <span>Ollama</span>
+              <span>Docker</span>
+              <span>RAG</span>
+            </div>
+            <a
+              class="project-link"
+              href="https://github.com/Mizan-muf/Hippo-Cortex-Retrive"
+              target="_blank"
+              rel="noreferrer"
+            >
+              View Repository <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+          </article>
+
+          <article class="project-card card reveal delay-1">
             <div class="project-top">
               <h3>FBSPLAI &mdash; AI Insurance Sales Platform</h3>
               <span class="tag">2025</span>
@@ -359,6 +303,86 @@
               <span>Elasticsearch</span>
               <span>Docker</span>
             </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience" class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="section-kicker">Career</p>
+          <h2>Experience</h2>
+        </div>
+
+        <div class="timeline">
+          <article class="timeline-item card reveal">
+            <div class="timeline-top">
+              <div>
+                <h3>AI/ML Engineer</h3>
+                <p class="company">FBSPL</p>
+              </div>
+              <div class="timeline-meta">
+                <span>Feb 2025— Present</span>
+                <span>India · Udaipur</span>
+              </div>
+            </div>
+            <ul>
+              <li>Built internal AI tooling, ACORD extraction workflows, and automated reporting pipelines for document and operations automation.</li>
+              <li>Delivered a distributed monitoring platform across <strong>700+ endpoints</strong> with sub-<strong>200ms</strong> live updates, improving visibility and reducing MTTR.</li>
+              <li>Improved throughput and reliability using Redis-backed queues and Elasticsearch/SQL optimization, reducing P95 latency by <strong>45%</strong>.</li>
+            </ul>
+          </article>
+
+          <article class="timeline-item card reveal delay-1">
+            <div class="timeline-top">
+              <div>
+                <h3>Python Developer</h3>
+                <p class="company">NeoPanda Tech</p>
+              </div>
+              <div class="timeline-meta">
+                <span>Mar 2024 — Feb 2025</span>
+                <span>China · Shenzhen [Remote]</span>
+              </div>
+            </div>
+            <ul>
+              <li>Developing backend APIs and Python automation for data-driven applications, focused on scalable services and structured pipelines.</li>
+              <li>Contributing to <strong>Intelli-News</strong> through API integration, crawler/scraper workflows, and ingestion automation for newsletter generation.</li>
+            </ul>
+          </article>
+
+          <article class="timeline-item card reveal">
+            <div class="timeline-top">
+              <div>
+                <h3>Lead Product Engineer</h3>
+                <p class="company">Zume, Inc.</p>
+              </div>
+              <div class="timeline-meta">
+                <span>Apr 2023 — Mar 2024</span>
+                <span>USA · California [Remote]</span>
+              </div>
+            </div>
+            <ul>
+              <li>Led product development for AI/data applications, owning architecture, feature delivery, and end-to-end execution.</li>
+              <li>Contributed to <strong>Vocalytics-V0.3</strong>, including OpenAI-powered analytics workflows, forecasting features, and backend design.</li>
+            </ul>
+          </article>
+
+          <article class="timeline-item card reveal delay-1">
+            <div class="timeline-top">
+              <div>
+                <h3>AI Intern</h3>
+                <p class="company">IIT Roorkee</p>
+              </div>
+              <div class="timeline-meta">
+                <span>Jan 2024 — Feb 2024</span>
+                <span>India</span>
+              </div>
+            </div>
+            <ul>
+              <li>Built ML models for sentiment/emotion prediction and small-business sales forecasting.</li>
+              <li>Worked with SLM models to improve result quality and experimentation outcomes.</li>
+            </ul>
           </article>
         </div>
       </div>
@@ -560,30 +584,6 @@
       </div>
     </section>
   </main>
-
-  <nav class="dock" id="dock">
-    <a href="#top" data-section="top" class="dock-item active" aria-label="Home">
-      <i class="fa-solid fa-house"></i>
-    </a>
-    <a href="#about" data-section="about" class="dock-item" aria-label="About">
-      <i class="fa-regular fa-user"></i>
-    </a>
-    <a href="#experience" data-section="experience" class="dock-item" aria-label="Experience">
-      <i class="fa-solid fa-briefcase"></i>
-    </a>
-    <a href="#projects" data-section="projects" class="dock-item" aria-label="Projects">
-      <i class="fa-solid fa-code"></i>
-    </a>
-    <a href="#skills" data-section="skills" class="dock-item" aria-label="Skills">
-      <i class="fa-solid fa-bolt"></i>
-    </a>
-    <a href="#certifications" data-section="certifications" class="dock-item" aria-label="Certificates">
-      <i class="fa-solid fa-certificate"></i>
-    </a>
-    <a href="#contact" data-section="contact" class="dock-item" aria-label="Contact">
-      <i class="fa-regular fa-envelope"></i>
-    </a>
-  </nav>
 
   <script src="script.js"></script>
 </body>
