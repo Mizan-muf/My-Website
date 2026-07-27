@@ -9,7 +9,7 @@
   --accent: #7c9cff;
   --accent-2: #5eead4;
   --shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
-  --container: 1400px;
+  --container: 92vw;
   --radius: 12px;
 }
 
@@ -32,6 +32,7 @@ body.light {
 
 html {
   scroll-behavior: smooth;
+  font-size: clamp(15px, 10px + 0.5vw, 28px);
 }
 
 body {
