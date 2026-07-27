@@ -14,7 +14,7 @@
 }
 
 body.light {
-  --bg: #fafafa;
+  --bg: radial-gradient(circle at center, #ffffff 0%, #ffffff 30%, #f0faf9 70%, #e0f4f2 100%);
   --bg-elev: #ffffff;
   --bg-card: #ffffff;
   --border: #cccccc;
@@ -43,6 +43,7 @@ body {
   line-height: 1.65;
   transition: background 0.3s ease, color 0.3s ease;
   overflow-x: hidden;
+  background-attachment: fixed;
 }
 
 a {
