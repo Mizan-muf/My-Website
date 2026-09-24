@@ -355,10 +355,6 @@
       G.font.draw(ctx, a.section.numeral, a.x + 48 - cx, W.FLOOR_Y - 92 - cy, { color: P.i, align: "center" });
       G.font.draw(ctx, a.section.name, a.x + 48 - cx, W.FLOOR_Y - 81 - cy, { color: P.j, shadow: P.f, align: "center" });
     });
-    /* signboards */
-    W.signs.forEach(function (sg) {
-      if (sg.x < cx + view.w && sg.x + 112 > cx) G.world.letterSign(ctx, sg, sg.x - cx, sg.y - cy);
-    });
     /* portals */
     W.portals.forEach(function (pt) {
       if (state.near !== pt || pt.x > cx + view.w || pt.x + pt.w < cx) return;
