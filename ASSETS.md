@@ -219,6 +219,8 @@ character, planted in the floor.
 | `slab.png` | 160×96 | The atrium hero. **Engraved text baked in** — see below |
 | `shrine.png` | 48×64 | Contact altar, glowing centre |
 | `shrine-glow.png` | 48×64 | Additive glow overlay, transparent |
+| `portal.png` | 32×48 | Stone ring on a plinth. **Leave the opening transparent** — the swirling vortex is painted behind it in code, in the destination room's colours |
+| `signboard.png` | 112×40 | Wide two-line board with a right-pointing arrow tip, on a post. Blank — "NEXT" and the room name are lettered at runtime |
 
 ### The atrium slab
 This is the first thing anyone sees, so it's worth hand-lettering rather than
@@ -288,10 +290,10 @@ Don't draw these:
 | Tileset | 1 | 24 |
 | Moss | 1 | 9 |
 | Monolith | 1 | 4 |
-| Structures | 4 | 4 |
+| Structures | 6 | 6 |
 | Props | 4 | 20 |
 | Backgrounds | 3 | 3 |
-| **Total** | **16 files** | **~160 cells** |
+| **Total** | **18 files** | **~162 cells** |
 
 Of which the **art-gate pack (§2) is ~20 cells** — start there.
 

@@ -282,13 +282,18 @@ kbd {
   color: #d8d2c4;
 }
 
-.hud-next {
-  margin: 6px 0 0;
-  font: 500 12px var(--mono);
-  color: var(--gold);
+/* portal warp — a flash of the destination room's light */
+.warp {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 60%, #fff 0%, var(--warp, #ffd76a) 45%, rgba(11, 11, 16, 0.9) 100%);
+  opacity: 0;
+  transition: opacity 0.24s ease-in;
 }
-.hud-next:empty {
-  display: none;
+.warp.is-on {
+  opacity: 1;
 }
 
 /* ======================================================================
@@ -758,6 +763,29 @@ kbd {
 .map-gate:hover,
 .map-gate:focus-visible {
   background: var(--parchment-2);
+}
+.map-gate:disabled {
+  cursor: default;
+  opacity: 0.55;
+  background: transparent;
+}
+.map-gate.is-next {
+  box-shadow: inset 3px 0 0 var(--gold-dark);
+}
+.map-badge {
+  margin-left: 10px;
+  padding: 2px 6px;
+  font: 500 11px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  vertical-align: middle;
+  color: var(--ink-soft);
+  border: 1px solid var(--parchment-2);
+  border-radius: 3px;
+}
+.map-badge--next {
+  color: var(--gold-dark);
+  border-color: var(--gold-dark);
 }
 .map-count {
   font: 500 13px var(--mono);

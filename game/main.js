@@ -34,7 +34,7 @@
     var best = null;
     var bestD = Infinity;
     var pcx = player.x + player.w / 2;
-    W.things.concat(W.door).forEach(function (t) {
+    W.things.concat(W.portals, W.door).forEach(function (t) {
       var d = Math.abs(pcx - t.cx);
       if (d < t.range && d < bestD) {
         best = t;

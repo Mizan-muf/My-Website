@@ -932,6 +932,87 @@
     return s.c;
   }
 
+  /* Signboard 112×40 — the wide two-line board that stands before every
+     portal: a small top line ("NEXT") over the room name, arrow tip
+     pointing right at the portal. Lettered at runtime, like the signpost. */
+  function bakeSignboard() {
+    var s = canvas(112, 40);
+    var ctx = s.ctx;
+    /* post */
+    rect(ctx, 54, 26, 4, 14, "p");
+    rect(ctx, 54, 26, 1, 14, "q");
+    rect(ctx, 57, 26, 1, 14, "o");
+    rect(ctx, 50, 37, 12, 3, "3");
+    rect(ctx, 50, 37, 12, 1, "4");
+    /* board with an arrow-shaped right end */
+    for (var y = 1; y < 26; y++) {
+      var tip = Math.max(0, 8 - Math.abs(y - 13));
+      rect(ctx, 0, y, 104 + tip, 1, "p");
+      px(ctx, 103 + tip, y, "o");
+    }
+    rect(ctx, 0, 1, 104, 1, "q");
+    rect(ctx, 0, 1, 1, 25, "q");
+    rect(ctx, 0, 25, 104, 1, "o");
+    /* a seam between the two lines, grain + nails */
+    rect(ctx, 2, 13, 100, 1, "o");
+    var rnd = G.rng(951);
+    for (var i = 0; i < 16; i++) rect(ctx, 2 + Math.floor(rnd() * 98), 3 + Math.floor(rnd() * 21), 3, 1, "o");
+    px(ctx, 3, 3, "6");
+    px(ctx, 3, 23, "6");
+    px(ctx, 99, 3, "6");
+    px(ctx, 99, 23, "6");
+    return s.c;
+  }
+
+  /* Portal 32×48 — a rune-cut stone ring on a plinth. The opening is left
+     transparent: the renderer paints the swirling vortex behind it. */
+  function bakePortal() {
+    var s = canvas(32, 48);
+    var ctx = s.ctx;
+    function outer(x, y) {
+      if (x < 0 || x > 31 || y < 0) return false;
+      if (y >= 16) return true;
+      var dx = x - 15.5;
+      var dy = y - 16;
+      return dx * dx + dy * dy <= 256;
+    }
+    function inner(x, y) {
+      if (y > 43) return false;
+      if (y >= 16) return x >= 6 && x <= 25;
+      var dx = x - 15.5;
+      var dy = y - 16;
+      return dx * dx + dy * dy <= 100;
+    }
+    for (var y = 0; y < 44; y++) {
+      for (var x = 0; x < 32; x++) {
+        if (!outer(x, y) || inner(x, y)) continue;
+        var k = "4";
+        if (!outer(x - 1, y) || !outer(x, y - 1)) k = "5";
+        else if (!outer(x + 1, y)) k = "2";
+        else if (inner(x - 1, y) || inner(x + 1, y) || inner(x, y + 1)) k = "1";
+        else if (y >= 16 && (y - 16) % 8 === 7) k = "3";
+        else if (y < 16) {
+          var deg = (Math.atan2(y - 16, x - 15.5) * 180) / Math.PI + 180;
+          if (deg % 30 < 4) k = "3";
+        }
+        px(ctx, x, y, k);
+      }
+    }
+    /* plinth */
+    rect(ctx, 0, 44, 32, 4, "3");
+    rect(ctx, 0, 44, 32, 1, "5");
+    rect(ctx, 0, 47, 32, 1, "1");
+    /* gold keystone and runes */
+    rect(ctx, 13, 0, 6, 4, "h");
+    rect(ctx, 14, 1, 4, 2, "i");
+    [[2, 22], [2, 32], [28, 22], [28, 32], [4, 10], [26, 10]].forEach(function (r) {
+      px(ctx, r[0], r[1], "i");
+      px(ctx, r[0] + 1, r[1], "h");
+      px(ctx, r[0], r[1] + 1, "h");
+    });
+    return s.c;
+  }
+
   /* ======================================================================
      Parallax backgrounds (ASSETS.md §10). Tile seamlessly left↔right:
      every shape is drawn at x and x ± width.
@@ -1031,6 +1112,8 @@
     props16: { cw: 16, ch: 16, bake: bakeProps16 },
     props32: { cw: 16, ch: 32, bake: bakeProps32 },
     signpost: { cw: 72, ch: 32, bake: bakeSignpost },
+    signboard: { cw: 112, ch: 40, bake: bakeSignboard },
+    portal: { cw: 32, ch: 48, bake: bakePortal },
     bgFar: { cw: 320, ch: 180, bake: bakeBgFar },
     bgMid: { cw: 320, ch: 180, bake: bakeBgMid },
     bgNear: { cw: 320, ch: 48, bake: bakeBgNear }

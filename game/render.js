@@ -69,7 +69,16 @@
       cam.x += (cx - cam.x) * 0.14;
       cam.y += (targetY - cam.y) * 0.08;
     }
-    cam.x = Math.max(0, Math.min(W.width - view.w, cam.x));
+    /* stay inside the current room: its walls are the edge of the world */
+    var room = W.sectionAt(p.x + p.w / 2);
+    var lo = 0;
+    var hi = W.width;
+    if (room.x1) {
+      lo = Math.max(0, room.x0 - W.T);
+      hi = Math.min(W.width, room.x1 + W.T);
+    }
+    if (hi - lo <= view.w) cam.x = (lo + hi - view.w) / 2;
+    else cam.x = Math.max(lo, Math.min(hi - view.w, cam.x));
   }
 
   /* ======================================================================
@@ -114,10 +123,11 @@
         L.push({ x: t.cx, y: t.y + 12, r: 96 * flicker(7), c: "#ffd76a", a: 0.38 });
       }
     });
-    /* passages: cool, dim cavern light */
-    W.passages.forEach(function (ps) {
-      if (ps[1] < x0 || ps[0] > x1) return;
-      L.push({ x: (ps[0] + ps[1]) / 2, y: 60, r: 70, c: "#6f86c8", a: 0.12 });
+    /* portals glow in the colour of the room they lead to */
+    W.portals.forEach(function (pt) {
+      if (pt.x + pt.w < x0 || pt.x > x1) return;
+      var near = state.near === pt;
+      L.push({ x: pt.cx, y: pt.y + 26, r: (48 + (near ? 16 : 0)) * flicker(pt.x), c: pt.dest.biome.light, a: 0.26 + (near ? 0.1 : 0) });
     });
     /* the plain-view doorway glows warm */
     var d = W.door;
@@ -266,6 +276,14 @@
       }
     });
 
+    /* portals: swirling vortex behind the stone ring */
+    var vf = G.reduced ? 0 : Math.floor(time * 10) % VORTEX_FRAMES;
+    W.portals.forEach(function (pt) {
+      if (pt.x + pt.w < cx || pt.x > cx + view.w) return;
+      ctx.drawImage(vortex(pt.dest.biome), vf * 32, 0, 32, 48, pt.x - cx, pt.y - cy, 32, 48);
+      G.sprites.draw(ctx, "portal", 0, 0, pt.x - cx, pt.y - cy);
+    });
+
     /* player */
     G.sprites.draw(ctx, "char", p.frame, p.row, Math.round(p.x) - 3 - cx, Math.round(p.y) - 2 - cy, p.facing < 0);
 
@@ -276,7 +294,6 @@
     drawLighting(collectLights(W, p, state));
     drawParticles();
     drawLabels(W, state, cx, cy);
-    drawGuide(W, state, cx, cy);
 
     parallax(G.sprites.sheet("bgNear"), 1.3, W.FLOOR_Y + 36 - 48 - cy);
   }
@@ -289,28 +306,31 @@
     });
   }
 
-  /* Off-screen guide: a pulsing chevron at the screen edge pointing to the
-     next unread record (state.target, chosen by ui.js). */
-  function drawGuide(W, state, cx, cy) {
-    var t = state.target;
-    if (!t) return;
-    var sx = t.cx - cx;
-    if (sx > 8 && sx < view.w - 8) return;
-    var right = sx >= view.w - 8;
-    var dir = right ? 1 : -1;
-    var pulse = G.reduced ? 0 : Math.round(Math.sin(time * 5) * 2);
-    var x = right ? view.w - 12 + pulse : 12 - pulse;
-    var y = W.FLOOR_Y - 40 - cy;
-    /* a 9px-tall chevron, 2px stroke, dark outline */
-    for (var pass = 0; pass < 2; pass++) {
-      ctx.fillStyle = pass ? P.j : P["0"];
-      for (var i = 0; i < 9; i++) {
-        var off = (4 - Math.abs(i - 4)) * dir;
-        if (pass) ctx.fillRect(x + off - 1, y + i, 2, 1);
-        else ctx.fillRect(x + off - 2, y + i - 1, 4, 3);
+  /* Portal vortex — a spiral in the destination room's colours, baked
+     once per destination as a strip of frames and cycled. Only the
+     ring's opening is painted; the ring sprite covers the edges. */
+  var VORTEX_FRAMES = 12;
+  var vortices = {};
+
+  function vortex(biome) {
+    var key = biome.tint + biome.light;
+    if (vortices[key]) return vortices[key];
+    var s = G.sprites.canvas(32 * VORTEX_FRAMES, 48);
+    for (var f = 0; f < VORTEX_FRAMES; f++) {
+      for (var y = 6; y < 44; y++) {
+        for (var x = 6; x < 26; x++) {
+          var dx = x - 15.5;
+          if (y < 16 && dx * dx + (y - 16) * (y - 16) > 100) continue;
+          var r = Math.sqrt(dx * dx + (y - 26) * (y - 26));
+          var a = Math.atan2(y - 26, dx) / (Math.PI * 2);
+          var v = (((a * 3 + r * 0.08 - f / VORTEX_FRAMES) % 1) + 1) % 1;
+          s.ctx.fillStyle = r < 2.5 ? P.w : v < 0.34 ? biome.light : v < 0.6 ? biome.tint : P.s;
+          s.ctx.fillRect(f * 32 + x, y, 1, 1);
+        }
       }
     }
-    G.font.draw(ctx, "NEXT", x - dir * 2, y + 12, { color: P.j, shadow: P["0"], align: right ? "right" : "left" });
+    vortices[key] = s.c;
+    return s.c;
   }
 
   function drawShrineFlame(x, y) {
@@ -332,15 +352,19 @@
     var bob = G.reduced ? 0 : Math.round(Math.sin(time * 4) * 1.5);
     W.arches.forEach(function (a) {
       if (a.x + 96 < cx || a.x > cx + view.w) return;
-      var entry = a.kind === "entry";
-      G.font.draw(ctx, entry ? a.section.numeral : "→", a.x + 48 - cx, W.FLOOR_Y - 92 - cy, { color: P.i, align: "center" });
-      G.font.draw(ctx, entry ? a.section.name : "NEXT GATE →", a.x + 48 - cx, W.FLOOR_Y - 81 - cy, { color: entry ? P.j : P.i, shadow: P.f, align: "center" });
+      G.font.draw(ctx, a.section.numeral, a.x + 48 - cx, W.FLOOR_Y - 92 - cy, { color: P.i, align: "center" });
+      G.font.draw(ctx, a.section.name, a.x + 48 - cx, W.FLOOR_Y - 81 - cy, { color: P.j, shadow: P.f, align: "center" });
     });
-    /* signpost and plain-view door */
-    var sg = W.sign;
-    if (sg.x < cx + view.w && sg.x + 72 > cx) {
-      G.font.draw(ctx, "PORTFOLIO →", sg.x + 33 - cx, sg.y + 6 - cy, { color: P.j, shadow: P.o, align: "center" });
-    }
+    /* signboards */
+    W.signs.forEach(function (sg) {
+      if (sg.x < cx + view.w && sg.x + 112 > cx) G.world.letterSign(ctx, sg, sg.x - cx, sg.y - cy);
+    });
+    /* portals */
+    W.portals.forEach(function (pt) {
+      if (state.near !== pt || pt.x > cx + view.w || pt.x + pt.w < cx) return;
+      G.font.draw(ctx, state.touch ? "TAP READ" : "↑ ENTER", pt.cx - cx, pt.y - 12 + bob - cy, { color: P.w, shadow: P["0"], align: "center" });
+    });
+    /* plain-view door */
     var d = W.door;
     if (d.x < cx + view.w + 40) {
       var nearDoor = state.near === d;

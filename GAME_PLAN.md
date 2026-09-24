@@ -1,8 +1,8 @@
 # Portfolio as a side-scrolling dungeon — build plan
 
-A 2D pixel-art side-scroller. The visitor walks a character right through a torch-lit
-stone corridor, passes under engraved archways into each portfolio section, and
-interacts with monoliths to read individual entries.
+A 2D pixel-art side-scroller. Each portfolio section is its own sealed, torch-lit
+room. The visitor walks through a room, reads its monoliths, and steps through the
+portal at the end to travel to any other room.
 
 Status: **Phases 1–8 built (2026-09-24).** Game is live at `/`; the previous page is `classic.html`.
 Art is currently **drawn in code** (see §6) — the Phase 2 art gate is open for review.
@@ -13,8 +13,8 @@ Art is currently **drawn in code** (see §6) — the Phase 2 art gate is open fo
 
 | Decision | Choice |
 |---|---|
-| Genre | Side-scroller, one continuous corridor |
-| Gates | Archways you walk under. No transitions, no loading, no backtracking |
+| Genre | Side-scroller, one sealed room per section |
+| Rooms | Solid rock between rooms. A **portal** at the end of each room opens a destination picker (next room preselected) |
 | Traversal | Walk + **expressive jump** — jump feels good but nothing ever requires it |
 | Ground | Continuous. Every monolith reachable by holding → |
 | World render | `<canvas>` |
@@ -214,4 +214,10 @@ prev/next so a reader can page through every record without walking.
 - Read-state is **per visit only** — nothing persists across reloads (supersedes §5 step 5 and §7).
 - Gates are now **walk-through rooms**: open-cavern passage → entrance arch in a thick facade (front layer) → enclosed room with a lower ceiling → exit arch "NEXT GATE →". The shrine room ends the world.
 - Guidance: title card on every load (Enter the dungeon / Plain view), a PORTFOLIO → signpost at spawn, a lit "← PLAIN VIEW" doorway in the left wall (walk into it or press ↑), HUD "Next: …" line and an edge chevron toward the next unread record.
+
+### Round 3 (2026-09-24) — rooms and portals
+- The corridor is split into **sealed rooms**: Atrium, then one per section. Solid rock (`WALL`) between them; passages, ledges and exit arches are gone. Each room is at least 480px wide, and the camera is clamped to the current room, so you never see a neighbour.
+- Every room ends in a **signboard** (`NEXT / <ROOM> →`; Contact's reads `BACK TO / THE ATRIUM →`) and a **portal**. ↑ / E / click at a portal opens the map dialog in portal mode ("The Portal"): the current room is disabled and the next room is preselected. Choosing one plays a short light flash (skipped with reduced motion) and teleports you.
+- The HUD "Next: …" line and the edge chevron are **removed**. Visitors go at their own pace; the signboards are the only guidance.
+- Tab / Map fast travel is unchanged.
 - "Classic view" renamed **Plain view** (file stays `classic.html`).

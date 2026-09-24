@@ -180,6 +180,7 @@
   function open(t) {
     if (!t) return;
     if (t.kind === "door") return goPlain();
+    if (t.kind === "portal") return openPortal(t);
     G.engine.releaseAll();
     current = t;
     els.panelKicker.textContent = kicker(t);
@@ -210,7 +211,7 @@
   }
 
   function isOpen() {
-    return titleOn || els.panel.open || els.map.open;
+    return titleOn || warping || els.panel.open || els.map.open;
   }
 
   function goPlain() {
@@ -235,19 +236,28 @@
   }
 
   /* ======================================================================
-     Gate map — fast travel, and the keyboard path through everything
+     Gate map — fast travel, and the keyboard path through everything.
+     A portal opens the same list: the room you're in is marked, the next
+     room is preselected, and choosing one warps you there.
      ====================================================================== */
 
+  var portal = null; // the portal the map was opened from, if any
+  var warping = false;
+
   function renderMap() {
+    var here = portal ? W.sections.indexOf(portal.section) : -1;
     els.mapList.innerHTML = W.sections
       .map(function (s, i) {
         var read = s.items.filter(function (t) {
           return t.read;
         }).length;
         var label = s.numeral ? "Gate " + s.numeral + " · " + s.name : "Atrium · Introduction";
+        var badge = "";
+        if (i === here) badge = '<span class="map-badge">You are here</span>';
+        else if (portal && i === portal.nextIndex) badge = '<span class="map-badge map-badge--next">Next</span>';
         return (
-          '<li><button type="button" class="map-gate" data-gate="' + i + '">' +
-          '<span class="map-name">' + esc(label) + "</span>" +
+          '<li><button type="button" class="map-gate' + (portal && i === portal.nextIndex ? " is-next" : "") + '" data-gate="' + i + '"' + (i === here ? " disabled" : "") + ">" +
+          '<span class="map-name">' + esc(label) + badge + "</span>" +
           '<span class="map-count">' + read + " / " + s.items.length + "</span>" +
           "</button></li>"
         );
@@ -255,12 +265,26 @@
       .join("");
   }
 
-  function openMap() {
+  function showMap(from) {
     G.engine.releaseAll();
+    portal = from || null;
+    els.mapKicker.textContent = portal ? "Step through to" : "Fast travel";
+    els.mapTitle.textContent = portal ? "The Portal" : "The Gates";
+    els.map.classList.toggle("is-portal", !!portal);
     renderMap();
-    els.map.showModal();
-    var first = els.mapList.querySelector("button");
+    if (!els.map.open) els.map.showModal();
+    var first = portal ? els.mapList.querySelector('[data-gate="' + portal.nextIndex + '"]') : els.mapList.querySelector("button");
     if (first) first.focus();
+  }
+
+  function openMap() {
+    showMap(null);
+  }
+
+  function openPortal(p) {
+    player.interact = 0.4;
+    player.vx = 0;
+    showMap(p);
   }
 
   function closeMap() {
@@ -269,10 +293,27 @@
 
   function goGate(i) {
     var s = W.sections[i];
+    var viaPortal = !!portal;
     closeMap();
-    travelTo(s.gateX ? s.gateX + W.ARCH_W + 8 : W.spawn.x);
-    player.facing = 1;
-    toast(s);
+    function arrive() {
+      travelTo(s.gateX ? s.gateX + W.ARCH_W + 8 : W.spawn.x);
+      player.facing = 1;
+      toast(s);
+    }
+    if (!viaPortal || G.reduced) return arrive();
+    /* a short flash of light covers the jump */
+    warping = true;
+    G.engine.releaseAll();
+    els.warp.style.setProperty("--warp", s.biome.light);
+    els.warp.classList.add("is-on");
+    setTimeout(function () {
+      arrive();
+      els.warp.classList.remove("is-on");
+      setTimeout(function () {
+        warping = false;
+        els.screen.focus();
+      }, 120);
+    }, 260);
   }
 
   /* ======================================================================
@@ -354,7 +395,7 @@
     [
       "panel", "panelKicker", "panelTitle", "panelBody", "prev", "next", "close",
       "map", "mapList", "mapClose", "hudSection", "hudRead", "hudTotal", "hudBar",
-      "toast", "hint", "btnMap", "btnContact", "screen", "hudNext",
+      "toast", "hint", "btnMap", "btnContact", "screen", "mapKicker", "mapTitle", "warp",
       "title", "titleStart",
       "tLeft", "tRight", "tJump", "tRead"
     ].forEach(function (id) {
@@ -388,12 +429,13 @@
     els.btnMap.addEventListener("click", openMap);
     els.mapClose.addEventListener("click", closeMap);
     els.map.addEventListener("close", function () {
+      portal = null;
       els.screen.focus();
     });
     els.map.addEventListener("click", function (e) {
       if (e.target === els.map) closeMap();
       var b = e.target.closest("[data-gate]");
-      if (b) goGate(+b.dataset.gate);
+      if (b && !b.disabled) goGate(+b.dataset.gate);
       if (e.target.closest("[data-open-contact]")) openContact();
     });
     els.btnContact.addEventListener("click", openContact);
@@ -466,43 +508,16 @@
     var p = G.render.toWorld(clientX, clientY);
     var d = W.door;
     if (p.x >= d.x && p.x <= d.x + d.w && p.y >= d.y - 24 && p.y <= d.y + d.h) return d;
-    for (var i = 0; i < W.things.length; i++) {
-      var t = W.things[i];
+    var all = W.things.concat(W.portals);
+    for (var i = 0; i < all.length; i++) {
+      var t = all[i];
       if (p.x >= t.x && p.x <= t.x + t.w && p.y >= t.y - 14 && p.y <= t.y + t.h) return t;
     }
     return null;
   }
 
-  /* The next unread record in walking order (the slab doesn't count). */
-  var lastNext = "";
-  function updateNext() {
-    var target = null;
-    for (var i = 0; i < order.length; i++) {
-      if (!order[i].read && order[i].kind !== "slab") {
-        target = order[i];
-        break;
-      }
-    }
-    G.state.target = target;
-    var text;
-    if (!target) {
-      text = "All records read ✓";
-    } else {
-      var s = target.section;
-      var pcx = player.x + player.w / 2;
-      var here = W.sectionAt(pcx) === s;
-      var arrow = target.cx >= pcx ? "→" : "←";
-      text = "Next: Gate " + s.numeral + " · " + s.name + " " + (here ? "· " + (target.data.label || target.data.title) + " " + arrow : arrow);
-    }
-    if (text !== lastNext) {
-      lastNext = text;
-      els.hudNext.textContent = text;
-    }
-  }
-
   function frame() {
     updateHud(false);
-    updateNext();
     els.tRead.classList.toggle("is-ready", !!G.state.near);
     if (player.moved > 160) hideHint();
   }
@@ -512,6 +527,7 @@
     open: open,
     goPlain: goPlain,
     openMap: openMap,
+    openPortal: openPortal,
     isOpen: isOpen,
     frame: frame
   };

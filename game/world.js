@@ -1,18 +1,19 @@
 /* ------------------------------------------------------------------------
    World — lays the dungeon out from content.js and bakes its static art.
 
-   One continuous floor, left to right:
+   A row of sealed rooms, one per section, left to right:
 
-     [Plain-view door] ATRIUM (slab)
-       → passage → ENTRANCE ARCH → room I (monoliths) → EXIT ARCH
-       → passage → … → ENTRANCE ARCH → shrine room (end of the world)
+     [Plain-view door] ATRIUM (slab) · sign · PORTAL ▌rock▐
+       ENTRANCE ARCH · room I (monoliths) · sign · PORTAL ▌rock▐
+       … · shrine room · sign · PORTAL ▌end wall▐
 
-   Passages are open caverns: no back wall, so the parallax shows through,
-   and a floating ledge to jump on. Rooms are enclosed: tinted back wall,
-   lower ceiling, torches. Each arch sits in a thick facade drawn on the
-   *front* layer, so the player visibly walks under and through it.
+   Solid rock separates the rooms, so the only way between them is a
+   portal (or the map). Each room ends in a signboard naming the next
+   section and pointing at its portal. Rooms are enclosed: tinted back
+   wall, lower ceiling, torches. The entrance arch sits in a thick facade
+   drawn on the *front* layer, as the room's engraved title.
 
-   Every monolith is reachable by holding →. Nothing requires a jump.
+   Every monolith in a room is reachable by holding →. Nothing requires a jump.
 
    Static art is baked once into two world-sized canvases (back / front).
    Per frame the renderer blits a view-sized slice of each, plus the
@@ -43,7 +44,12 @@
   var MONO_W = 32;
   var MONO_GAP = 48;
   var ARCH_W = 96;
-  var PASSAGE_W = 128;
+  var WALL_COLS = 2; // solid rock between rooms
+  var ROOM_MIN = 480; // ≥ the widest view (render.js), so a room never shows its neighbour
+  var SIGN_W = 112;
+  var PORTAL_W = 32;
+  var PORTAL_H = 48;
+  var TAIL = SIGN_W + 8 + PORTAL_W + 32; // sign, portal, margin before the back wall
 
   var BIOMES = {
     atrium: { tint: "#d9ab3c", light: "#ffb85c", moss: 0.35 },
@@ -66,6 +72,31 @@
      Layout
      ====================================================================== */
 
+  /* End a room: signboard + portal against the back wall, then rock.
+     Short rooms are padded out to ROOM_MIN before the sign. */
+  function closeRoom(W, s, contentEnd) {
+    var x1 = snap(Math.max(s.x0 + ROOM_MIN, contentEnd + TAIL));
+    var portal = {
+      kind: "portal",
+      section: s,
+      x: x1 - 32 - PORTAL_W,
+      y: FLOOR_Y - PORTAL_H,
+      w: PORTAL_W,
+      h: PORTAL_H,
+      range: 24,
+      label: "PORTAL"
+    };
+    portal.cx = portal.x + PORTAL_W / 2;
+    portal.sign = { sheet: "signboard", x: portal.x - 8 - SIGN_W, y: FLOOR_Y - 40, top: "NEXT", text: "" };
+    W.signs.push(portal.sign);
+    W.torches.push({ x: portal.sign.x + SIGN_W / 2 - 8, y: 70, color: s.biome.light }); // lights the sign
+    W.portals.push(portal);
+    s.portal = portal;
+    s.x1 = x1;
+    W.rooms.push([s.x0, x1]);
+    W.walls.push([x1, x1 + WALL_COLS * T]);
+  }
+
   function build(content) {
     var W = {
       T: T,
@@ -76,13 +107,14 @@
       sections: [],
       passage: { id: "passage", name: "Passage", numeral: "", biome: BIOMES.passage, items: [] },
       things: [], // records: slab, monoliths, shrine
+      portals: [], // one per room, against its back wall
+      signs: [], // {sheet, x, y, top?, text}
       torches: [], // {x, y, color, front?}
-      arches: [], // {x, kind: "entry" | "exit", section}
+      arches: [], // {x, kind: "entry", section}
       rooms: [], // [x0, x1] enclosed: back wall
+      walls: [], // [x0, x1] solid rock between rooms
       lowCeil: [], // [x0, x1] where the ceiling drops a row
-      passages: [], // [x0, x1] open caverns
-      ledges: [], // [col0, col1, row]
-      pillars: [], // x px of free-standing pillars in passages
+      pillars: [], // x px of free-standing pillars
       decor: [] // {sheet, c, r, x, y, tint?}
     };
 
@@ -93,15 +125,13 @@
       numeral: "",
       biome: BIOMES.atrium,
       x0: 0,
-      x1: 400,
       items: []
     };
     W.sections.push(atrium);
-    W.rooms.push([0, 400]);
     W.spawn = { x: 80, y: FLOOR_Y - 22 };
     W.door = { kind: "door", x: 36, y: FLOOR_Y - 48, w: 26, h: 48, range: 22, label: "PLAIN VIEW" };
     W.door.cx = W.door.x + W.door.w / 2;
-    W.sign = { x: 104, y: FLOOR_Y - 32 };
+    W.signs.push({ sheet: "signpost", x: 104, y: FLOOR_Y - 32, text: "PORTFOLIO →" });
 
     var slab = {
       id: "atrium",
@@ -123,27 +153,20 @@
     W.torches.push({ x: 176, y: 76, color: BIOMES.atrium.light });
     W.torches.push({ x: 360, y: 76, color: BIOMES.atrium.light });
     W.pillars.push(384);
-    var x = 400;
+    closeRoom(W, atrium, 400);
+    var x = atrium.x1 + WALL_COLS * T;
 
-    /* ── GATES ──────────────────────────────────────────────────────── */
+    /* ── ROOMS ──────────────────────────────────────────────────────── */
     content.sections.forEach(function (sec, si) {
       var biome = BIOMES[sec.biome] || BIOMES.moss;
-      var last = si === content.sections.length - 1;
-
-      /* passage: open cavern, two pillars, a floating ledge */
-      W.passages.push([x, x + PASSAGE_W]);
-      W.pillars.push(x + 16, x + PASSAGE_W - 32);
-      W.ledges.push([Math.floor((x + 48) / T), Math.floor((x + 48) / T) + 2, 6]);
-      x += PASSAGE_W;
-
-      var gateX = x;
+      var gateX = x + T;
       var section = {
         id: sec.id,
         name: sec.name,
         kicker: sec.kicker,
         numeral: NUMERALS[si],
         biome: biome,
-        x0: gateX,
+        x0: x,
         gateX: gateX,
         items: []
       };
@@ -186,27 +209,22 @@
         }
       });
 
-      var roomEnd = snap(x - 16);
-      if (last) {
-        /* the shrine room is the end of the world */
-        W.endX = roomEnd + 32;
-        section.x1 = W.endX;
-        W.rooms.push([gateX, W.endX]);
-        W.lowCeil.push([gateX + ARCH_W, W.endX]);
-        x = W.endX;
-      } else {
-        section.exitX = roomEnd;
-        section.x1 = roomEnd + ARCH_W;
-        W.rooms.push([gateX, roomEnd + ARCH_W]);
-        W.lowCeil.push([gateX + ARCH_W, roomEnd]);
-        W.arches.push({ x: roomEnd, kind: "exit", section: section });
-        W.torches.push({ x: roomEnd - 14, y: 74, color: biome.light, front: true });
-        W.torches.push({ x: roomEnd + ARCH_W - 2, y: 74, color: BIOMES.passage.light, front: true });
-        x = roomEnd + ARCH_W + 16;
-      }
+      closeRoom(W, section, x);
+      W.lowCeil.push([gateX + ARCH_W, section.x1]);
+      x = section.x1 + WALL_COLS * T;
     });
 
-    W.cols = W.endX / T + 2;
+    /* each portal's sign names the next room; the last leads back home */
+    W.portals.forEach(function (p, i) {
+      p.nextIndex = (i + 1) % W.sections.length;
+      var next = W.sections[p.nextIndex];
+      p.dest = next;
+      p.sign.top = p.nextIndex === 0 ? "BACK TO" : "NEXT";
+      p.sign.text = (p.nextIndex === 0 ? "THE ATRIUM" : next.name) + " →";
+    });
+
+    W.endX = W.sections[W.sections.length - 1].x1;
+    W.cols = W.endX / T + WALL_COLS;
     W.width = W.cols * T;
 
     /* ── TILE GRID ──────────────────────────────────────────────────── */
@@ -224,14 +242,15 @@
         grid[W.cols + cc] = CEIL;
       }
     });
-    /* end walls */
+    /* the atrium's left wall, and the rock between (and after) rooms */
     for (r = 0; r < ROWS; r++) {
       grid[r * W.cols] = WALL;
       grid[r * W.cols + 1] = WALL;
-      for (c = W.endX / T; c < W.cols; c++) grid[r * W.cols + c] = WALL;
     }
-    W.ledges.forEach(function (l) {
-      for (var cc = l[0]; cc <= l[1]; cc++) grid[l[2] * W.cols + cc] = LEDGE;
+    W.walls.forEach(function (wl) {
+      for (var cc = wl[0] / T; cc < wl[1] / T && cc < W.cols; cc++) {
+        for (var rr = 0; rr < ROWS; rr++) grid[rr * W.cols + cc] = WALL;
+      }
     });
     W.grid = grid;
 
@@ -244,7 +263,7 @@
       return grid[W.cols + col] === CEIL ? 2 * T : T;
     };
 
-    /* the room (or atrium) a point is in — passages between rooms */
+    /* the room (or atrium) a point is in — W.passage inside the rock */
     W.sectionAt = function (px) {
       for (var i = 0; i < W.sections.length; i++) {
         var s = W.sections[i];
@@ -317,9 +336,20 @@
     ctx.fillRect(d.x + d.w, oy + d.y + 6, 1, d.h - 6);
   }
 
+  /* Signs are lettered at runtime. The renderer calls this too, after the
+     darkness pass, so the words stay legible. */
+  function letterSign(ctx, s, x, y) {
+    if (s.sheet === "signboard") {
+      G.font.draw(ctx, s.top, x + 52, y + 5, { color: P.i, shadow: P.o, align: "center" });
+      G.font.draw(ctx, s.text, x + 52, y + 15, { color: P.j, shadow: P.o, align: "center" });
+    } else {
+      G.font.draw(ctx, s.text, x + 33, y + 6, { color: P.j, shadow: P.o, align: "center" });
+    }
+  }
+
   function drawSign(ctx, s, oy) {
-    S().draw(ctx, "signpost", 0, 0, s.x, oy + s.y);
-    G.font.draw(ctx, "PORTFOLIO →", s.x + 33, oy + s.y + 6, { color: P.j, shadow: P.o, align: "center" });
+    S().draw(ctx, s.sheet, 0, 0, s.x, oy + s.y);
+    letterSign(ctx, s, s.x, oy + s.y);
   }
 
   /* A thick stone facade around an arch — lives on the FRONT layer. */
@@ -341,13 +371,8 @@
     pillar(ctx, c1 * T, oy, 4);
     S().draw(ctx, "archway", 0, 0, a.x, oy + FLOOR_Y - 96);
     tintRect(ctx, c0 * T, oy + T, (c1 - c0 + 1) * T, 8 * T, biome.tint, 0.12);
-    if (a.kind === "entry") {
-      G.font.draw(ctx, a.section.numeral, a.x + 48, oy + FLOOR_Y - 92, { color: P.i, align: "center" });
-      G.font.draw(ctx, a.section.name, a.x + 48, oy + FLOOR_Y - 81, { color: P.j, shadow: P.f, align: "center" });
-    } else {
-      G.font.draw(ctx, "→", a.x + 48, oy + FLOOR_Y - 92, { color: P.i, align: "center" });
-      G.font.draw(ctx, "NEXT GATE →", a.x + 48, oy + FLOOR_Y - 81, { color: P.i, shadow: P.f, align: "center" });
-    }
+    G.font.draw(ctx, a.section.numeral, a.x + 48, oy + FLOOR_Y - 92, { color: P.i, align: "center" });
+    G.font.draw(ctx, a.section.name, a.x + 48, oy + FLOOR_Y - 81, { color: P.j, shadow: P.f, align: "center" });
   }
 
   function bake(W) {
@@ -359,7 +384,7 @@
     var fctx = front.ctx;
     var c, r, h, x;
 
-    /* ── back wall: rooms only; passages open onto the cavern ──────── */
+    /* ── back wall: rooms only ─────────────────────────────────────── */
     for (c = 0; c < W.cols; c++) {
       var cx = c * T;
       if (!inRange(W.rooms, cx + 8)) continue;
@@ -374,7 +399,7 @@
       tintRect(bctx, s.x0, oy + T, s.x1 - s.x0, 8 * T, s.biome.tint, 0.16);
     });
 
-    /* free-standing pillars in the passages */
+    /* free-standing pillars */
     W.pillars.forEach(function (px0) {
       pillar(bctx, px0, oy, 1);
     });
@@ -387,12 +412,6 @@
         if (hh < 0.12) S().draw(bctx, "props16", 6, 0, xx, top); // chain
         else if (hh < 0.2) S().draw(bctx, "props16", 4 + (hh < 0.16 ? 0 : 1), 0, xx, top); // roots
         else if (hh > 0.93) S().draw(bctx, "props16", 8 + (hh > 0.965 ? 1 : 0), 0, xx, oy + 3 * T + Math.floor(hh * 60)); // cracks
-      }
-    });
-    /* roots dangling into the passages */
-    W.passages.forEach(function (p) {
-      for (var xx = p[0]; xx < p[1]; xx += T) {
-        if (G.hash(xx, 78) < 0.35) S().draw(bctx, "props16", 4 + (G.hash(xx, 79) < 0.5 ? 0 : 1), 0, xx, oy + T);
       }
     });
 
@@ -408,7 +427,9 @@
     });
 
     drawDoor(bctx, W.door, oy);
-    drawSign(bctx, W.sign, oy);
+    W.signs.forEach(function (sg) {
+      drawSign(bctx, sg, oy);
+    });
 
     /* slab and shrine are static; monoliths are drawn live */
     W.things.forEach(function (t) {
@@ -448,6 +469,7 @@
 
     /* moss — floor tufts, ceiling drips, vines, ledge tops */
     for (c = 2; c < W.cols - 2; c++) {
+      if (W.grid[8 * W.cols + c] === WALL) continue;
       var sx = c * T;
       var biome = W.sectionAt(sx).biome;
       var cb = oy + W.ceilBottom(c);
@@ -458,16 +480,11 @@
       h = G.hash(c, 9);
       if (h < biome.moss * 0.5) S().draw(fctx, "moss", 6 + Math.floor(G.hash(c, 10) * 3), 0, sx, cb);
     }
-    W.ledges.forEach(function (l) {
-      S().draw(fctx, "moss", 3, 0, l[0] * T, oy + l[2] * T - 4);
-      S().draw(fctx, "moss", 1, 0, (l[0] + 1) * T, oy + l[2] * T - 4);
-      S().draw(fctx, "moss", 4, 0, l[1] * T, oy + l[2] * T - 4);
-    });
 
     W.back = back.c;
     W.front = front.c;
     W.bakeOffsetY = oy;
   }
 
-  G.world = { build: build, BIOMES: BIOMES };
+  G.world = { build: build, BIOMES: BIOMES, letterSign: letterSign };
 })();
