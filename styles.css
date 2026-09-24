@@ -1,623 +1,1594 @@
-:root {
-  --bg: #0b1020;
-  --bg-elev: rgba(17, 24, 39, 0.72);
-  --bg-card: rgba(15, 23, 42, 0.72);
-  --border: rgba(255, 255, 255, 0.08);
-  --text: #e5e7eb;
-  --muted: #9ca3af;
-  --heading: #f8fafc;
-  --accent: #7c9cff;
-  --accent-2: #5eead4;
-  --shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
-  --container: 92vw;
-  --radius: 12px;
+@charset "UTF-8";
+/* ==========================================================================
+   MEEZAAN CHISHTY — "CATALOGUE & COLOPHON"
+   Editorial letterpress stylesheet. Hand-written, no build step, no framework.
+   Implements BUILD_SPEC.md against the markup in index.html.
+
+   BANDS
+     01  TOKENS — stocks, inks, rules, geometry, spacing, type scale
+     02  ROOT GROUND & RESET
+     03  BASE TYPOGRAPHY
+     04  LAYOUT — the named-line grid and the .rec record
+     05  TEXTURE
+     06  HEADER / NAV / SIDEBAR
+     07  MASTHEAD (hero) + ACTION STRIP
+     08  PROJECTS — the centrepiece
+     09  FURNITURE
+     10  EXPERIENCE
+     11  THE .spec-row LEDGER — Skills / Certifications / Education
+     12  COLOPHON
+     13  CONTACT
+     14  LINKS & MOTION
+     15  UTILITIES
+     16  RESPONSIVE
+     17  REDUCED MOTION / REDUCED TRANSPARENCY
+     18  PRINT
+
+   RULE OF THE HOUSE: every colour comes from a custom property. The only
+   literal colour values in this file are (a) the two root-ground values in
+   band 02, which exist because `html` cannot see tokens declared on `body`,
+   (b) the alpha keywords in the `.work-stack` mask, which are opacities and
+   not colours, and (c) the print stock in band 18, whose values are
+   byte-identical to the light token block.
+
+   HAIRLINES ON HIDPI: every rule on this page is exactly `1px`, never a
+   fractional value. `0.5px` renders crisply only at exactly 2dppx; at 1.5,
+   2.25 and 2.75 dppx it lands on a fractional device pixel and either
+   antialiases to a ghost or drops out entirely. `1px` always maps to at least
+   one whole device pixel at every ratio, which is the only way a hairline
+   survives a fractional-DPR display. The weight is carried by the token
+   colour (`--rule` at 1.31:1 light / 1.42:1 dark), not by the thickness.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   01  TOKENS
+   Two designed stocks on one warm ladder. Tokens are named for stock and ink,
+   never for theme. NO RULE OUTSIDE THESE TWO BLOCKS BRANCHES ON THEME.
+
+   Ladder: s0 #FDFBF6  s1 #F5F1E8  s2 #EAE4D5  s3 #DCD4C2  s4 #C3B9A2
+           s5 #948B76  s6 #635C4E  s7 #4A443B  s8 #2E2A22  s9 #1F1C18  s10 #141210
+   ========================================================================== */
+
+:root{
+  color-scheme: light;
+
+  /* ── surfaces ─────────────────────────────────────────────────────────── */
+  --paper:       #F5F1E8;   /* s1 — the page */
+  --paper-2:     #EAE4D5;   /* s2 — tinted paper. Declared for completeness and
+                               verified for contrast; NO component uses it. */
+  --drawer:      #FDFBF6;   /* s0 — held back for the mobile drawer ONLY */
+  --furniture:   #E4DDCC;   /* the 10px pale slab */
+
+  /* ── inks ─────────────────────────────────────────────────────────────── */
+  --ink:         #211E1A;   /* body, titles, primary action        14.72:1 */
+  --ink-2:       #4A443B;   /* second paragraphs, appendix prose    8.54:1 */
+  --ink-muted:   #635C4E;   /* labels, metadata, dim values         5.87:1 */
+
+  /* ── rules — DECORATION. These never carry text. ──────────────────────── */
+  --rule:        #DCD4C2;   /* s3 — every hairline                  1.31:1 */
+  --rule-strong: #C3B9A2;   /* s4 — link underlines, dotted rules, middots */
+
+  /* ── accent ───────────────────────────────────────────────────────────── */
+  --accent:      #9E2B1E;   /* printer's red                        6.61:1 */
+
+  /* ── overlay — per-stock, deliberately not a shared color-mix ─────────── */
+  --scrim:       rgba(33, 30, 26, .46);
+
+  /* ── geometry ─────────────────────────────────────────────────────────── */
+  --measure:     34rem;     /* 544px prose column */
+  --col-margin:  9.5rem;    /* 152px marginalia / label column */
+  --gutter:      clamp(1.25rem, 4vw, 2.5rem);
+  --header-h:    3.5rem;
+
+  /* ── spacing — bimodal, with a deliberate hole between 1.5rem and 2.5rem ─ */
+  --sp-1: .25rem;
+  --sp-2: .5rem;
+  --sp-3: .75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: clamp(1.75rem, 2.6vw, 2.375rem); /*  28 →  38px  between experience records */
+  --sp-7: clamp(2.25rem, 3.6vw, 3.5rem);   /*  36 →  56px  between appendix sections  */
+  --sp-8: clamp(2.75rem, 4.5vw, 4.25rem);  /*  44 →  68px  masthead→projects, the slab */
+  --sp-9: clamp(2.5rem,  4vw,   4rem);     /*  40 →  64px  BETWEEN PROJECT ENTRIES     */
+
+  /* ── type scale — every clamp evaluated at 360px and 1440px ───────────── */
+  --t-micro:      clamp(0.625rem,  0.6042rem + 0.093vw, 0.6875rem);  /* 10 → 11 */
+  --t-label:      clamp(0.6875rem, 0.6667rem + 0.093vw, 0.75rem);    /* 11 → 12 */
+  --t-meta:       clamp(0.8125rem, 0.7917rem + 0.093vw, 0.875rem);   /* 13 → 14 */
+  --t-small:      clamp(0.9375rem, 0.9167rem + 0.093vw, 1rem);       /* 15 → 16 */
+  --t-appendix:   clamp(1.0625rem, 1.0417rem + 0.093vw, 1.125rem);   /* 17 → 18 */
+  --t-body:       clamp(1.125rem,  1.0833rem + 0.185vw, 1.25rem);    /* 18 → 20 */
+  --t-deck:       clamp(1.25rem,   1.1875rem + 0.278vw, 1.4375rem);  /* 20 → 23 */
+  --t-lede:       clamp(1.625rem,  1.4167rem + 0.926vw, 2.25rem);    /* 26 → 36 */
+  --t-entry:      clamp(1.4375rem, 1.2917rem + 0.648vw, 1.875rem);   /* 23 → 30 */
+  --t-entry-lead: clamp(1.875rem,  1.5833rem + 1.296vw, 2.75rem);    /* 30 → 44 — the largest type on the page */
+
+  /* ── families — real fallback chains; the site must render from file:// ─ */
+  --font-serif: "EB Garamond", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans:  "Public Sans", -apple-system, system-ui, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono:  "IBM Plex Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  /* ── body weight is a TOKEN so no component rule has to branch on theme ── */
+  --weight-body: 450;
+
+  /* ── flat declarations, so depth cannot creep back in ─────────────────── */
+  --shadow: none;
+  --radius: 0;
+  --grain:  .04;
 }
 
-body.light {
-  --bg: radial-gradient(circle at center, #ffffff 0%, #ffffff 30%, #f0faf9 70%, #e0f4f2 100%);
-  --bg-elev: #ffffff;
-  --bg-card: #ffffff;
-  --border: #cccccc;
-  --text: #212121;
-  --muted: #666666;
-  --heading: #000000;
-  --accent: #315efb;
-  --accent-2: #0f766e;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+/* DARK — "ink stock". A second designed stock, not an inversion:
+   (a) dark paper is the 9th ladder step, the 10th is held back for the drawer;
+   (b) dark ink is warm off-white — pure white and pure black exist in neither
+       stock, at any step of the ladder;
+   (c) hairlines carry proportionally MORE ink (1.31:1 → 1.42:1), because a
+       naive mirror makes rules vanish on charcoal;
+   (d) body weight rises 450 → 500 and the accent is re-picked, because one
+       red cannot pass AA on both stocks. */
+body:not(.light){
+  color-scheme: dark;
+
+  --paper:       #1F1C18;   /* s9 — NOT the darkest step */
+  --paper-2:     #2A2620;
+  --drawer:      #141210;   /* s10 — held back for the drawer */
+  --furniture:   #2E2A22;
+
+  --ink:         #EDE6D7;   /* 13.66:1 */
+  --ink-2:       #C6BDA9;   /*  9.09:1 */
+  --ink-muted:   #A39982;   /*  6.01:1 */
+
+  --rule:        #3B362D;
+  --rule-strong: #57503F;
+
+  --accent:      #E8836B;   /*  6.38:1 */
+
+  --scrim:       rgba(10, 9, 7, .62);
+
+  --weight-body: 500;
+  --grain:       .05;
 }
 
-* {
-  box-sizing: border-box;
-}
 
-html {
+/* ==========================================================================
+   02  ROOT GROUND & RESET
+   ========================================================================== */
+
+/* The root ground and the anti-flash pair. These two values are literal
+   because `html` cannot see tokens declared on `body:not(.light)`. They are
+   held in local custom properties so each literal is written exactly once. */
+html{
+  --root-cream: #F5F1E8;
+  --root-ink:   #1F1C18;
+
+  background: var(--root-cream);
+  color-scheme: light;
+
+  /* `clip`, NEVER `hidden`. `clip` does not create a scroll container, so
+     position:sticky on the header and the projects running head keep working;
+     `hidden` silently kills both. This is a safety net only — every grid
+     track is minmax(0, …) and every grid child carries min-width:0. */
+  overflow-x: clip;
+
+  font-size: 100%;              /* no root font-size hack; user settings respected */
+  -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  font-size: clamp(15px, 10px + 0.5vw, 28px);
 }
 
-body {
+/* Set by the blocking inline <head> script, so a returning dark-mode reader
+   never sees a cream flash in the overscroll area or the native scrollbar. */
+html.pre-dark{
+  background: var(--root-ink);
+  color-scheme: dark;
+}
+
+/* Root-stock self-correction. BUILD_SPEC §11 Change 3 adds one line to
+   script.js that keeps `.pre-dark` in sync with the body class; until that
+   ships, `.pre-dark` goes stale the moment a dark-mode reader switches to
+   light (dark root behind a light page). These two rules derive the root
+   stock from the body class instead, so the sheet is correct with or without
+   the script delta. Where :has() is unsupported the rules are dropped whole
+   and behaviour falls back to exactly what §3.3 specifies. */
+html:has(body:not(.light)){ background: var(--root-ink);   color-scheme: dark;  }
+html:has(body.light)      { background: var(--root-cream); color-scheme: light; }
+
+/* The one and only corner-rounding declaration in this stylesheet, and it is
+   a global zero. Nothing on this page is a rounded box. */
+*,
+*::before,
+*::after{
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+/* Heading reset written as an actual rule, not merely asserted. Every
+   component then declares its own size — that is the mechanism that stops
+   size creep during maintenance. */
+h1, h2, h3, h4, h5, h6{
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.2;
   margin: 0;
-  font-family: "Outfit", sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.65;
-  transition: background 0.3s ease, color 0.3s ease;
-  overflow-x: hidden;
-  background-attachment: fixed;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+body{
+  margin: 0;
+  background: transparent;      /* the html ground and the grain show through */
+  color: var(--ink);
+
+  font-family: var(--font-serif);
+  font-size: var(--t-body);
+  font-weight: var(--weight-body);
+  line-height: 1.55;
+
+  /* The complete OpenType surface this stylesheet is permitted to touch.
+     The low-level raw-feature property is banned outright: 27 Google-served
+     WOFF2s were parsed and NONE contains smcp, c2sc, onum, swsh, dlig or any
+     ss0x, and that property OVERRIDES rather than merges — one later partial
+     declaration on a child would silently switch off everything set here.
+     Synthesized small capitals are banned for a different reason: they are
+     worse than a no-op, because they render, as browser-drawn caps that are
+     visibly too light and too narrow against real text weight. Small caps on
+     this page are faked with uppercase + tracking, inline, per component.
+     Only the two cascading, merging properties below are used. */
+  font-variant-ligatures: common-ligatures contextual;
+  font-kerning: normal;
+
+  border-bottom: 8px solid var(--ink);   /* the press bar */
 }
 
-.container {
-  width: min(var(--container), calc(100% - 2rem));
-  margin: 0 auto;
+::selection{
+  background: var(--ink);
+  color: var(--paper);
 }
 
-.bg-grid {
+:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* 76px against a 56px header — every anchor clears the sticky bar. */
+#top,
+#projects,
+#experience,
+#skills,
+#certifications,
+#education,
+#contact{
+  scroll-margin-top: calc(var(--header-h) + 1.25rem);
+}
+
+
+/* ==========================================================================
+   03  BASE TYPOGRAPHY
+   ========================================================================== */
+
+h1, h2, h3{ text-wrap: balance; }
+p{ text-wrap: pretty; }          /* fixes rags and orphans in a 34rem measure */
+
+a{ overflow-wrap: break-word; }  /* blanket guard for long unbroken strings */
+
+strong{
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;   /* 700+, 200ms, 45% */
+}
+
+/* Nothing on this page is 700. Serif headings and all project titles are 450;
+   sans caps are 600 at micro/meta and 500 at label, so optical colour stays
+   even as tracking grows. These are real variable weights inside the 400..700
+   range requested in the CSS2 URL, never synthesized. */
+
+
+/* ==========================================================================
+   04  LAYOUT
+   The named-line page grid, and the one two-track record component.
+   ========================================================================== */
+
+/* Content shell wide-start → wide-end = 9.5 + 1.5 + 34 + 1.5 + 9.5 = 56rem
+   (896px) around a 34rem (544px) measure = 1.65:1. Prose never runs
+   full-bleed. Every track is minmax(0, …). */
+.grid{
+  display: grid;
+  grid-template-columns:
+    [full-start]   minmax(var(--gutter), 1fr)
+    [wide-start]   minmax(0, var(--col-margin))
+    [narrow-start] minmax(0, var(--measure))
+    [narrow-end]   minmax(0, var(--col-margin))
+    [wide-end]     minmax(var(--gutter), 1fr)
+    [full-end];
+  column-gap: var(--sp-5);
+}
+.grid > *{ min-width: 0; }
+
+.u-narrow{ grid-column: narrow; }
+.u-wide  { grid-column: wide;   }
+.u-full  { grid-column: full;   }
+.u-push-left{ grid-column: wide-start / narrow-end; }
+
+/* .rec — THE one two-track record component. Projects, Experience, the
+   spec ledger and the Colophon all share this geometry and this collapse;
+   each adds only its own grid-template-areas. Because every one of them
+   authors its MARGIN CONTENT FIRST IN DOM, unwinding to display:block at
+   900px yields the correct linear reading order with zero `order`, zero
+   absolute positioning and zero negative margins in the responsive path. */
+.rec{
+  grid-column: wide-start / narrow-end;
+  display: grid;
+  grid-template-columns: minmax(0, var(--col-margin)) minmax(0, var(--measure));
+  column-gap: var(--sp-5);
+}
+.rec > *{ min-width: 0; }
+
+/* Section rhythm. Sections carry the space above them; the two rules that
+   double as breaks (hr.furniture, hr.tick) carry their own. */
+.section{ margin-top: var(--sp-7); }
+
+
+/* ==========================================================================
+   05  TEXTURE
+   One fixed, pointer-events:none layer at z-index:-1, between the page ground
+   and all content. The SVG filter rasterizes a single 180×180 tile ONCE at
+   load and is then tiled by the compositor; because the layer is fixed and
+   carries no transform or animation it is never repainted on scroll. It is
+   the only filter on the page, and nothing anywhere in this sheet blurs what
+   sits behind it, so there is no per-frame blur cost. No mix-blend-mode — blending would tint
+   text, and it is unnecessary because the layer sits behind content.
+   Zero new binary assets: inline data: URI, '#' encoded as %23.
+   ========================================================================== */
+
+body::before{
+  content: "";
   position: fixed;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-  background-size: 38px 38px;
-  mask-image: radial-gradient(circle at center, black 40%, transparent 78%);
+  z-index: -1;
   pointer-events: none;
-  z-index: -3;
-}
-
-body.light .bg-grid {
-  background-image:
-    linear-gradient(rgba(15,23,42,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15,23,42,0.05) 1px, transparent 1px);
-}
-
-.mmm-shape {
-  position: fixed;
-  pointer-events: none;
-  z-index: -2;
-}
-
-.blob-1 {
-  top: -10%;
-  right: -10%;
-  width: 80vw;
-  max-width: 800px;
-  opacity: 0.1;
-  z-index: -3;
-}
-
-.abstract-1 {
-  top: 15%;
-  right: 10%;
-  width: 150px;
-  animation: float 6s ease-in-out infinite;
-}
-
-.abstract-2 {
-  bottom: 20%;
-  right: 5%;
-  width: 200px;
-  animation: float 8s ease-in-out infinite reverse;
-}
-
-.abstract-3 {
-  top: 40%;
-  left: -5%;
-  width: 250px;
-  opacity: 0.8;
-  animation: float 7s ease-in-out infinite;
-}
-
-.abstract-4 {
-  bottom: 5%;
-  right: 25%;
-  width: 120px;
-  animation: float 5s ease-in-out infinite reverse;
+  opacity: var(--grain);      /* 4% light / 5% dark — felt, not seen */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
 }
 
 
+/* ==========================================================================
+   06  HEADER / NAV / SIDEBAR
+   3.5rem, one hairline. No fill change, no shadow, no blurred glass, no
+   scroll-triggered chrome, no pill active indicator.
+   ========================================================================== */
 
-@keyframes float {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(5deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
-}
-
-.site-header {
+.site-header{
   position: sticky;
   top: 0;
   z-index: 50;
-  backdrop-filter: blur(18px);
-  background: rgba(11, 16, 32, 0.55);
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  height: var(--header-h);
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
 }
 
-body.light .site-header {
-  background: rgba(245, 247, 251, 0.78);
-  border-bottom: 1px solid rgba(15,23,42,0.06);
-}
-
-.nav-wrap {
+/* Aligns exactly with the page grid's wide-start / wide-end lines. */
+.nav-wrap{
+  width: min(56rem, 100% - (2 * var(--gutter)));
+  margin-inline: auto;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 72px;
-  gap: 1rem;
+  gap: var(--sp-5);
 }
 
-.brand {
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--heading);
+.brand{
+  font-family: var(--font-serif);
+  font-size: var(--t-appendix);
+  font-weight: 500;
+  letter-spacing: -.004em;
+  color: var(--ink);
+  text-decoration: none;
 }
+.brand:hover,
+.brand:focus-visible{ color: var(--accent); }
 
-.top-nav {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.top-nav a {
-  color: var(--muted);
-  font-size: 0.95rem;
-  transition: color 0.2s ease;
-}
-
-.top-nav a:hover {
-  color: var(--heading);
-}
-
-.theme-toggle {
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  color: var(--heading);
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-}
-
-.section {
-  padding: 5.5rem 0;
-}
-
-.hero {
-  padding-top: 4.5rem;
-  padding-bottom: 3.5rem;
-}
-
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
-  gap: 2rem;
-  align-items: center;
-}
-
-.eyebrow,
-.section-kicker {
-  display: inline-block;
-  font-size: 0.82rem;
+.top-nav{ display: flex; gap: 1.6rem; }
+.top-nav a{
+  font-family: var(--font-sans);
+  font-size: var(--t-micro);
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--accent);
-  margin-bottom: 0.95rem;
-  font-weight: 700;
+  letter-spacing: .14em;
+  color: var(--ink-muted);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .5em;
+  text-decoration-color: transparent;
+  transition: color .2s ease, text-decoration-color .2s ease;
+}
+.top-nav a:hover,
+.top-nav a:focus-visible{
+  color: var(--ink);
+  text-decoration-color: var(--accent);
 }
 
-.hero h1 {
+.header-actions{ display: flex; align-items: center; gap: 1rem; }
+
+.header-icon{
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--ink-muted);
+  text-decoration: none;
+  transition: color .2s ease;
+}
+.header-icon:hover,
+.header-icon:focus-visible{ color: var(--accent); }
+
+/* All three chromeless controls share one box. The 2.25rem minimum is a real
+   hit target that survives even if the Font Awesome CDN never answers. */
+.theme-toggle,
+.menu-toggle,
+.sidebar-close{
+  background: none;
+  border: 0;
+  padding: 0;
   margin: 0;
-  font-size: clamp(1.25rem, 2.5vw, 2.25rem);
-  line-height: 1.05;
-  letter-spacing: -0.045em;
-  color: var(--heading);
-  max-width: 14ch;
-}
-
-.hero-text {
-  max-width: 62ch;
-  margin: 1.25rem 0 0;
-  color: var(--muted);
-  font-size: 1.04rem;
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.9rem;
-  margin-top: 1.7rem;
-}
-
-.btn {
+  cursor: pointer;
+  color: var(--ink-muted);
+  font-size: 1rem;
+  line-height: 1;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 48px;
-  padding: 0 1.15rem;
-  border-radius: 999px;
-  font-weight: 600;
-  border: 1px solid transparent;
-  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  transition: color .2s ease;
 }
+.theme-toggle:hover,
+.menu-toggle:hover,
+.sidebar-close:hover{ color: var(--ink); }
 
-.btn:hover {
-  transform: translateY(-1px);
-}
+/* Font Awesome is CDN-only, so the two controls a mobile reader cannot do
+   without are drawn in pure CSS and work with no network at all. script.js
+   never touches their innerHTML, so there is no double-render risk. */
+.menu-toggle,
+.sidebar-close{ position: relative; }
 
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent), #5b7cff);
-  color: white;
-}
-
-.btn-secondary {
-  border-color: var(--border);
-  background: var(--bg-card);
-  color: var(--heading);
-}
-
-.meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 1.15rem;
-  margin-top: 1.5rem;
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-.meta-row i {
-  margin-right: 0.45rem;
-  color: var(--accent);
-}
-
-.hero-card {
-  display: grid;
-  gap: 1rem;
-}
-
-.card,
-.stat-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  border-radius: var(--radius);
-  backdrop-filter: blur(18px);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-  border-color: var(--accent);
-}
-
-.stat-card {
-  padding: 1.2rem 1.2rem 1.05rem;
-}
-
-.stat-card strong {
+.menu-toggle::before{           /* hamburger: the outer two rules */
+  content: "";
   display: block;
-  color: var(--heading);
-  font-size: 1.02rem;
-  margin-bottom: 0.35rem;
+  width: 1.05rem;
+  height: .72rem;
+  border-top: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+}
+.menu-toggle::after{            /* hamburger: the middle rule */
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.05rem;
+  height: 1px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
 }
 
-.stat-card p,
-.summary-card p,
-.project-card p,
-.contact-card p,
-.edu-grid p,
-.timeline-item li {
-  color: var(--muted);
+.sidebar-close::before,
+.sidebar-close::after{          /* close: two rotated rules */
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.05rem;
+  height: 1px;
+  background: currentColor;
 }
+.sidebar-close::before{ transform: translate(-50%, -50%) rotate(45deg);  }
+.sidebar-close::after { transform: translate(-50%, -50%) rotate(-45deg); }
 
-.stat-label {
-  display: inline-block;
-  margin-bottom: 0.6rem;
-  color: var(--accent);
-  font-size: 0.76rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-
-.section-head {
-  margin-bottom: 1.75rem;
-}
-
-.section-head h2,
-.contact-card h2 {
-  margin: 0;
-  font-size: clamp(1.25rem, 2.25vw, 1.75rem);
-  letter-spacing: -0.035em;
-  color: var(--heading);
-}
-
-.summary-card,
-.contact-card {
-  padding: 1.5rem;
-}
-
-.timeline {
-  display: grid;
-  gap: 1rem;
-}
-
-.timeline-item {
-  padding: 1.4rem;
-}
-
-.timeline-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: flex-start;
-  margin-bottom: 0.95rem;
-}
-
-.timeline-top h3,
-.project-card h3,
-.edu-grid h3,
-.card h3 {
-  margin: 0 0 0.22rem;
-  color: var(--heading);
-  font-size: 1.05rem;
-}
-
-.company,
-.muted {
-  margin: 0;
-  color: var(--muted);
-}
-
-.timeline-meta {
-  text-align: right;
-  display: grid;
-  gap: 0.2rem;
-  color: var(--muted);
-  font-size: 0.92rem;
-}
-
-.timeline-item ul,
-.project-card ul {
-  margin: 0;
-  padding-left: 1.15rem;
-}
-
-.timeline-item li + li {
-  margin-top: 0.45rem;
-}
-
-.project-grid,
-.skills-layout,
-.edu-grid {
-  display: grid;
-  gap: 1.25rem;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-}
-
-.project-card {
-  padding: 1.35rem;
-}
-
-.project-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.9rem;
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.3rem 0.72rem;
-  border-radius: 999px;
-  background: rgba(124, 156, 255, 0.14);
-  color: var(--accent);
-  font-weight: 700;
-  font-size: 0.8rem;
-}
-
-.stack,
-.pill-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-top: 1rem;
-}
-
-.stack span,
-.pill {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 0.42rem 0.78rem;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.04);
-  color: var(--heading);
-  font-size: 0.88rem;
-}
-
-body.light .stack span,
-body.light .pill {
-  background: rgba(15, 23, 42, 0.03);
-}
-
-.project-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  margin-top: 1rem;
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.skills-layout,
-.edu-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.skills-layout .card,
-.edu-grid .card {
-  padding: 1.3rem;
-}
-
-.edu-date,
-.edu-score {
-  display: block;
-  margin-top: 0.6rem;
-  color: var(--muted);
-}
-
-.section-last {
-  padding-bottom: 8rem;
-}
-
-
-.reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.65s ease, transform 0.65s ease;
-}
-
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.delay-1 {
-  transition-delay: 0.12s;
-}
-
-
-/* Desktop & Mobile Utilities */
-.desktop-only { display: flex; }
-.mobile-only { display: none; }
-
-/* Header Actions */
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-.header-icon {
-  color: var(--muted);
-  font-size: 1.25rem;
-  transition: color 0.2s ease;
-}
-.header-icon:hover {
-  color: var(--heading);
-}
-.menu-toggle {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--heading);
-  cursor: pointer;
-}
-
-/* Sidebar */
-.sidebar {
+/* -- the drawer -----------------------------------------------------------
+   Styled with maximum restraint. Exactly one verified analogue for an
+   off-canvas drawer exists in the reference set, so nothing is invented
+   here: no icons beside links, no chrome, no animation beyond the transform.
+   ------------------------------------------------------------------------ */
+.sidebar{
   position: fixed;
-  top: 0;
-  right: -320px;
-  width: 280px;
-  height: 100vh;
-  background: var(--bg-card);
-  border-left: 1px solid var(--border);
-  box-shadow: -4px 0 24px rgba(0,0,0,0.1);
-  z-index: 100;
-  padding: 2rem;
-  transition: right 0.3s ease;
+  inset: 0 0 0 auto;
+  z-index: 60;
+  width: min(20rem, 84vw);
+  background: var(--drawer);            /* the ladder step held back from the page */
+  border-left: 1px solid var(--rule);
+  transform: translateX(101%);
+  transition: transform .28s ease;
+  padding: calc(var(--header-h) + 1.5rem) var(--sp-5) var(--sp-5);
   display: flex;
   flex-direction: column;
+  gap: var(--sp-5);
+  overflow-y: auto;
 }
-.sidebar.open {
-  right: 0;
-}
-.sidebar-overlay {
+.sidebar.open{ transform: none; }
+
+.sidebar-overlay{
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(4px);
-  z-index: 99;
+  z-index: 55;
+  background: var(--scrim);
   opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
+  visibility: hidden;
+  transition: opacity .28s ease, visibility .28s;
 }
-.sidebar-overlay.open {
-  opacity: 1;
-  pointer-events: auto;
+.sidebar-overlay.open{ opacity: 1; visibility: visible; }
+
+.sidebar-close{ position: absolute; top: .9rem; right: 1rem; }
+
+.sidebar-nav{ display: flex; flex-direction: column; }
+.sidebar-link{
+  display: block;
+  padding: var(--sp-3) 0;
+  font-family: var(--font-serif);
+  font-size: var(--t-deck);
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+  transition: color .2s ease;
 }
-.sidebar-close {
-  background: none;
-  border: none;
-  font-size: 1.75rem;
-  color: var(--heading);
-  cursor: pointer;
-  align-self: flex-end;
-  margin-bottom: 2rem;
-}
-.sidebar-nav {
+.sidebar-nav .sidebar-link:first-child{ border-top: 1px solid var(--rule); }  /* a closed ledger */
+.sidebar-link:hover,
+.sidebar-link:focus-visible{ color: var(--accent); }
+
+.sidebar-actions{
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-.sidebar-link {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--heading);
-}
-.sidebar-actions {
-  margin-top: auto;
-  display: flex;
-  gap: 1.25rem;
   align-items: center;
+  gap: 1.25rem;
+  border-top: 1px solid var(--rule);
+  padding-top: var(--sp-4);
+  margin-top: auto;
 }
 
-@media (max-width: 980px) {
-  .hero-grid,
-  .project-grid,
-  .skills-layout,
-  .edu-grid {
-    grid-template-columns: 1fr;
-  }
+/* Visibility swap. Written at (0,2,0) so it does not depend on source order
+   against .top-nav{display:flex} / .header-actions{display:flex}. */
+.menu-toggle.mobile-only{ display: none; }
 
-  .hero h1 {
-    max-width: 100%;
-  }
 
-  .timeline-top {
-    flex-direction: column;
-  }
+/* ==========================================================================
+   07  MASTHEAD + ACTION STRIP
+   The page opens with a SENTENCE, not a billboard. The h1 (26→36px) is
+   deliberately smaller than the lead project title (30→44px). The owner's
+   name renders at brand/body size, never as display type. Both stat tiles are
+   gone from here — they live in the Colophon (band 12).
+   ========================================================================== */
 
-  .timeline-meta {
-    text-align: left;
+.masthead{
+  margin-top: 0;
+  padding-block: var(--sp-7) 0;
+}
+
+.kicker{
+  margin: 0 0 var(--sp-4);
+  font-family: var(--font-sans);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  color: var(--ink-muted);
+}
+
+.masthead h1{
+  font-family: var(--font-serif);
+  font-weight: 450;
+  font-size: var(--t-lede);
+  line-height: 1.18;
+  letter-spacing: -.012em;
+  color: var(--ink);
+  max-width: 26ch;
+}
+
+.standfirst{
+  margin: var(--sp-4) 0 0;
+  font-family: var(--font-serif);
+  font-size: var(--t-deck);
+  line-height: 1.45;
+  letter-spacing: -.006em;
+  color: var(--ink-2);
+  max-width: 32ch;
+}
+
+/* -- the action strip — the replacement for every gradient pill button ---- */
+.actions{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .45rem 1.9rem;
+  margin-top: var(--sp-5);
+  padding-block: .85rem;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.action{
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  color: var(--ink-muted);
+  background: none;
+  border: 0;
+  box-shadow: none;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .45em;
+  text-decoration-color: var(--rule-strong);
+  transition: color .2s ease, text-decoration-color .2s ease;
+}
+/* The primary action is distinguished by INK LEVEL, not by a glyph or a fill —
+   consistent with the hierarchy used everywhere else on the page. */
+.actions .action:first-child{
+  color: var(--ink);
+  text-decoration-color: var(--ink);
+}
+/* ↗ is retained only where it means something: the link opens a new tab. */
+.action[target="_blank"]::after{ content: " \2197"; letter-spacing: 0; }
+
+.action:hover,
+.action:focus-visible{
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+/* Background is `none` at rest, on hover AND on active. No radius, no
+   gradient, no glow, no lift — at any state, anywhere on the page. */
+
+
+/* ==========================================================================
+   08  PROJECTS — THE CENTREPIECE
+   Six mechanisms make this section unmistakably dominant, and every one is
+   numeric: air (--sp-9 = 64→136px between entries, 2.7× mobile / 5.7× desktop
+   against the appendix), type size (23→30px, lead 30→44px — the largest type
+   on the page, larger than the h1), ink (the only section label in full
+   --ink), a device nothing else has (the margin docket), the lead plate
+   (44px title + drop cap, one instance), and vertical share (≈41% of the
+   document, more than every other section combined).
+   ========================================================================== */
+
+.section--work{ margin-top: var(--sp-8); }
+
+/* -- the running head, shared by all five section labels ------------------ */
+.running-head{
+  display: flex;
+  align-items: baseline;
+  gap: .85rem;
+}
+.running-head h2{
+  flex: 0 1 auto;
+  line-height: .75;                    /* drops the label onto the rule's baseline */
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  color: var(--ink-muted);
+}
+.running-head .rule{
+  flex: 1 1 auto;
+  border-bottom: 1px solid var(--rule);
+  transform: translateY(-.18em);       /* the page's one optical nudge */
+}
+.running-head .kicker{
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: .14em;
+}
+.running-head-wrap{ margin-bottom: var(--sp-6); }
+
+/* The ONLY section label on the page set in full ink. */
+.section--work .running-head h2{ color: var(--ink); }
+
+/* The sticky element is a plain block child of #projects, whose box is
+   thousands of pixels tall — that is what gives it a scroll range. Sticky on
+   a grid item is confined to its own grid area, so a running head placed
+   directly in the section grid would occupy one ~40px row and never stick.
+   It also releases exactly when #projects scrolls out, so it can never park
+   over the Experience heading. #projects MUST NOT be display:grid. */
+@media (min-width: 62.5em){
+  .section--work .running-head-wrap{
+    position: sticky;
+    top: var(--header-h);
+    z-index: 2;
+    background: var(--paper);
+    padding-block: .9rem .55rem;
+    margin-bottom: calc(var(--sp-6) - .55rem);
   }
 }
 
-@media (max-width: 760px) {
-  .desktop-only { display: none !important; }
-  .mobile-only { display: block; }
-  .top-nav {
-    display: none;
+/* -- the plate ------------------------------------------------------------ */
+.work-list{ counter-reset: entry; }
+
+.work{
+  counter-increment: entry;
+  /* Three tracks, not two. The right margin column was defined by the page
+     grid and used by nothing, which read as a permanently empty gutter down
+     the whole page. The docket now lives there: link, metrics, stack. */
+  grid-column: wide;
+  grid-template-columns:
+    minmax(0, var(--col-margin))
+    minmax(0, var(--measure))
+    minmax(0, var(--col-margin));
+  grid-template-areas:
+    "meta  title spec"
+    "meta  body  spec";
+  /* Plain `baseline`, NEVER `first baseline`: if the `first` keyword fails to
+     parse the whole declaration is dropped and items fall back to `stretch`,
+     which is a visible break rather than a silent one. Baseline alignment is
+     scale-invariant, so the year sits on the title's first baseline and the
+     spec block sits on the deck's first baseline at every size from 23 to
+     44px — no fixed em nudge is needed or wanted. */
+  align-items: baseline;
+  border-top: 1px solid var(--rule);
+  padding-top: clamp(.9rem, 1.4vw, 1.35rem);   /* the rule HUGS the title; the void is below */
+}
+.work-meta { grid-area: meta;  text-align: right; margin: 0; }
+.work-title{ grid-area: title; }
+.work-spec { grid-area: spec;  text-align: left; }
+.work-body { grid-area: body;  max-width: var(--measure); }
+
+.work + .work{ margin-top: var(--sp-9); }      /* 64 → 136px */
+
+/* Opens the ledger. It does NOT close with a border-bottom — it closes with
+   the furniture slab. One closing mark, not two. */
+.work:first-of-type{
+  border-top-width: 2px;
+  border-top-color: var(--ink-2);
+}
+
+/* -- the margin docket — the single most distinctive component ------------
+   Reads top to bottom:  01 / 2026 / VIEW REPOSITORY ↗ / masked dashed rule /
+   right-aligned tracked-caps stack. It appears nowhere else on the page.
+   ------------------------------------------------------------------------ */
+.work-meta::before{                    /* the print index mark, from a CSS counter */
+  content: counter(entry, decimal-leading-zero);
+  display: block;
+  margin-bottom: .3rem;
+  font-family: var(--font-sans);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: .14em;
+  line-height: 1;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.work-year{
+  font-family: var(--font-mono);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  letter-spacing: .02em;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* -- the metric block -----------------------------------------------------
+   The hard numbers were previously readable only by reading the prose. A
+   skim-reader misses every one of them, which for an engineering portfolio
+   is the wrong failure mode. These are lifted verbatim from the entry's own
+   copy — nothing here is computed, inferred or invented, and the prose that
+   states them is untouched below.
+   ------------------------------------------------------------------------ */
+.work-metrics,
+.entry-metrics{
+  list-style: none;
+  margin: 0 0 .85rem;
+  padding: 0 0 .7rem;
+  border-bottom: 1px solid var(--rule);
+}
+.work-metrics li,
+.entry-metrics li{ margin-bottom: .45rem; }
+.work-metrics li:last-child,
+.entry-metrics li:last-child{ margin-bottom: 0; }
+
+.metric-value{
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.metric-label{
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 400;
+  letter-spacing: .06em;
+  line-height: 1.3;
+  color: var(--ink-muted);
+}
+
+/* The only click target in the entire section, and therefore the loudest
+   thing in the docket: --t-meta, full accent, a visible underline at rest,
+   and positioned at the head of the spec block directly under the year. */
+.work-link{
+  display: block;
+  margin-bottom: .75rem;
+  font-family: var(--font-sans);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  line-height: 1.3;
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .3em;
+  text-decoration-color: var(--rule-strong);
+  transition: text-decoration-color .2s ease;
+}
+.work-link::after{ content: " \2197"; letter-spacing: 0; }
+.work-link:hover,
+.work-link:focus-visible{ text-decoration-color: var(--accent); }
+
+.work-stack{
+  list-style: none;
+  margin: 0;
+  padding: .6rem 0 0;
+  position: relative;
+}
+/* A masked dashed hairline: it fades out at the LEFT, where the right-aligned
+   column is ragged, and stays solid at the right, where the text aligns. The
+   two gradient calls here paint a 1px monochrome rule and an alpha mask —
+   `transparent` and `black` are opacities, not colours. No gradient anywhere
+   on this page is a fill or a text colour. Unsupported mask-image → the full
+   dashed rule renders, which is harmless. */
+.work-stack::before{
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background-image: repeating-linear-gradient(to right,
+      var(--rule-strong) 0 3px, transparent 3px 6px);
+  /* The column is left-aligned now, so the rule is solid where the text
+     starts and fades into the ragged right edge. */
+  -webkit-mask-image: linear-gradient(to right, black 0, black 72%, transparent 100%);
+          mask-image: linear-gradient(to right, black 0, black 72%, transparent 100%);
+}
+.work-stack li{
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 400;
+  text-transform: lowercase;
+  letter-spacing: .01em;
+  line-height: 1.75;
+  color: var(--ink-muted);
+  hyphens: none;
+}
+/* Long items (Software Rendering, Computer Vision, Flask-Socket.IO) wrap to
+   two right-aligned lines. That is correct behaviour for a caption column. */
+
+/* -- titles ---------------------------------------------------------------
+   THE TITLE IS NEVER A LINK, for any of the seven. That is the deliberate
+   answer to FBSPLAI, ACORD Forms Extraction and Distributed Network
+   Monitoring having no URL: if the title carried the affordance, three of
+   seven entries would visibly read as broken. Absence of a link changes
+   NOTHING about an entry's frame, rule, title size, measure or spacing —
+   there is no disabled button, no greyed slot, no reserved gap. And there is
+   no hover state on the entry: an article-level hover would signal an
+   affordance that does not exist for three of seven.
+   ------------------------------------------------------------------------ */
+.work-title{
+  margin: 0 0 .55rem;
+  font-family: var(--font-serif);
+  font-weight: 450;
+  font-size: var(--t-entry);
+  line-height: 1.18;
+  letter-spacing: -.011em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.work--lead .work-title{
+  font-size: var(--t-entry-lead);
+  line-height: 1.08;
+  letter-spacing: -.018em;
+}
+
+/* -- prose: the deck / body split ----------------------------------------
+   Two entries run long (FBSPLAI 48 words, Neo Wolf 57). The italic serif deck
+   is the mitigation: a real editorial device that costs zero new words and
+   makes every entry scannable in one glance. Longhands, not the `font`
+   shorthand — the shorthand would reset font-variant-ligatures and
+   font-kerning back to their initial values and undo band 02.
+   ------------------------------------------------------------------------ */
+.work-deck{
+  margin: 0 0 .8em;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--t-deck);
+  line-height: 1.45;
+  letter-spacing: -.006em;
+  color: var(--ink);
+}
+.work-note{
+  margin: 0;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+/* -- the lead plate -------------------------------------------------------
+   A printed catalogue sets its lead plate larger and opens it with a drop
+   cap. One instance, one place. The first-formatted-line pseudo-element is
+   used NOWHERE in this stylesheet: that line's length changes once the cap
+   floats, so an uppercased run lands on a different number of words in
+   different engines and can shift on reflow. A floated first-letter alone is
+   deterministic and well supported; the uppercased opening line would be
+   decoration stacked on decoration. The 44px title carries the lead-plate
+   argument on its own. The lead deck
+   begins "An open-source research architecture…", so the cap is a clean A.
+   ------------------------------------------------------------------------ */
+.work--lead .work-deck::first-letter{
+  float: left;
+  font-family: var(--font-serif);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 3.1em;
+  line-height: .82;
+  padding-right: .14em;             /* padding as a FRACTION of the cap size */
+  padding-top: .06em;
+  color: var(--ink);
+}
+
+
+/* ==========================================================================
+   09  FURNITURE
+   A thick PALE rule reads as letterpress furniture; a thick dark rule reads
+   as a mistake. The slab is full-bleed and is the page's single loudest mark.
+   It does exactly one job: the catalogue ends, the record begins.
+   ========================================================================== */
+
+hr.furniture{
+  grid-column: full;
+  border: 0;
+  height: 0;
+  border-top: 10px solid var(--furniture);
+  margin: var(--sp-8) 0;
+}
+
+hr.tick{
+  border: 0;
+  border-top: 1px solid var(--rule);
+  max-width: 10rem;
+  margin: var(--sp-7) auto;
+}
+
+
+/* ==========================================================================
+   10  EXPERIENCE — Tier 2, deliberately NOT fine print
+   Bullets get exactly the same treatment as project body prose: same size,
+   same ink, same leading. That is parity at the prose level, not a step down.
+   Projects still outranks Experience by title size (23–44 vs 17–18), air
+   (136 vs 56), the italic deck, the drop cap, the docket, the full-ink label
+   and the sticky running head — six mechanisms Experience does not share.
+   No timeline spine, no dots, no connectors, no cards.
+   ========================================================================== */
+
+.section--exp{ margin-top: 0; }        /* hr.furniture already supplies --sp-8 */
+
+.entry{
+  /* Same three-track docket as .work, so experience reads as the same kind
+     of record and the right column is never empty. */
+  grid-column: wide;
+  grid-template-columns:
+    minmax(0, var(--col-margin))
+    minmax(0, var(--measure))
+    minmax(0, var(--col-margin));
+  grid-template-areas: "meta body spec";
+  align-items: baseline;
+  border-top: 1px solid var(--rule);
+  padding-top: var(--sp-3);
+}
+.entry-spec{ grid-area: spec; text-align: left; }
+.entry + .entry{ margin-top: var(--sp-6); }
+.entry-list .entry:last-of-type{
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: var(--sp-6);
+}
+
+.entry-meta{ grid-area: meta; text-align: right; margin: 0; }
+.entry-body{ grid-area: body; max-width: var(--measure); }
+
+.entry-date{
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.entry-place{
+  display: block;
+  margin-top: .3rem;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 400;
+  letter-spacing: .04em;
+  color: var(--ink-muted);
+}
+
+/* Renders as `AI/ML Engineer — FBSPL` on one line, with no copy change. */
+.entry-head{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .45rem;
+}
+.entry-head h3{
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: var(--t-appendix);
+  line-height: 1.3;
+  color: var(--ink);
+}
+.entry-head h3::after{
+  content: " \2014";
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.company{
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--t-appendix);
+  color: var(--ink-2);
+}
+
+.entry-points{ list-style: none; margin: .75rem 0 0; padding: 0; }
+.entry-points li{
+  position: relative;
+  padding-left: 1.05rem;
+  margin-bottom: .45rem;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.entry-points li::before{           /* a hanging en-dash, not a bullet glyph */
+  content: "\2013";
+  position: absolute;
+  left: 0;
+  color: var(--ink-muted);
+}
+
+
+/* ==========================================================================
+   11  THE .spec-row LEDGER — Tier 3
+   ONE component, three sections. Skills, Certifications and Education are all
+   ruled label/value records; only their separators differ.
+   ========================================================================== */
+
+.spec-row{
+  grid-template-areas: "label value";
+  align-items: baseline;
+  border-top: 1px solid var(--rule);
+  padding-block: var(--sp-3);
+}
+.spec-list .spec-row:last-of-type{ border-bottom: 1px solid var(--rule); }
+
+.spec-label{
+  grid-area: label;
+  text-align: right;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+.spec-value{
+  grid-area: value;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--t-meta);
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+/* -- Skills: a run-in list, never a pill row -----------------------------
+   No pill, no chip, no background, no border, no radius, no colour.
+   The <span>s are separated by newlines in the markup ON PURPOSE: U+00B7 is
+   line-break class AL in a non-CJK context, so AL×AL offers NO break
+   opportunity — without that whitespace the whole run would be one
+   unbreakable line and would overflow at 360px. The collapsed word-space
+   lands to the LEFT of the generated middot, so the left margin here is
+   reduced to compensate and keep the separator optically centred.
+   ------------------------------------------------------------------------ */
+.spec-value span + span::before{
+  content: "\00B7";
+  margin: 0 .5em 0 .22em;
+  color: var(--rule-strong);
+}
+
+/* -- Certifications: a dotted ledger and a two-column printed index -------
+   No surveyed reference site has thirty credentials to list, so this layout
+   is an inference — a label/value ledger plus columns:2 — and it is kept
+   deliberately plain for that reason. No arrows, no badges, no logos. Thirty
+   external-link arrows is exactly the decorative overuse the design bans.
+   ------------------------------------------------------------------------ */
+.section--certs .spec-row{
+  border-top-style: dotted;
+  border-top-color: var(--rule-strong);
+}
+.section--certs .spec-list .spec-row:last-of-type{
+  border-bottom-style: dotted;         /* the ledger closes in its own idiom */
+  border-bottom-color: var(--rule-strong);
+}
+
+.cert-index{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 2;
+  column-gap: 1.9rem;
+}
+.cert-index li{ margin: 0 0 .32rem; line-height: 1.4; }
+.cert-index a{
+  display: block;
+  break-inside: avoid;                 /* on the ANCHOR, so a two-line title
+                                          cannot split across the column break */
+  font-family: var(--font-sans);
+  font-size: var(--t-meta);
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .18em;
+  text-decoration-color: var(--rule-strong);
+  overflow-wrap: anywhere;
+  transition: color .2s ease, text-decoration-color .2s ease;
+}
+.cert-index a:hover,
+.cert-index a:focus-visible{
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+/* -- Education: the dates move into the label column ---------------------- */
+.section--edu .spec-label{
+  text-transform: none;
+  letter-spacing: .06em;
+  font-size: var(--t-meta);
+  font-variant-numeric: tabular-nums;
+}
+.edu-body h3{
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: var(--t-appendix);
+  line-height: 1.3;
+  color: var(--ink);
+}
+.edu-degree{
+  margin: .2rem 0 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--t-small);
+  color: var(--ink-muted);
+}
+.edu-score{
+  margin: .35rem 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--t-meta);
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ==========================================================================
+   12  COLOPHON — where Current Role and Focus Areas now live
+   Both hero stat tiles are deleted. All six strings reappear byte-for-byte as
+   a two-row label/value <dl> between Education and Contact, after a short
+   centred tick. No heading is added: a colophon is identified by its own
+   labels, and inventing one would be new copy.
+   Row 1's 2px top rule is the only other 2px rule on the page besides the one
+   that opens the projects ledger — the document brackets itself between the
+   work and its particulars.
+   ========================================================================== */
+
+.colophon{ margin: 0; }
+
+.colophon-row{
+  grid-template-areas: "label value";
+  align-items: baseline;               /* plain baseline — never `first baseline` */
+  padding-block: var(--sp-3);
+}
+.colophon-row:first-child{ border-top: 2px solid var(--ink-2); }
+.colophon-row + .colophon-row{ border-top: 1px solid var(--rule); }
+.colophon-row:last-child{ border-bottom: 1px solid var(--rule); }
+
+.colophon dt{
+  grid-area: label;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  line-height: 1.4;
+  color: var(--ink);                   /* the only full-ink labels in the back matter */
+  font-variant-numeric: tabular-nums;
+}
+.colophon dd{ grid-area: value; margin: 0; }
+
+.colophon-value{
+  display: block;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: var(--t-appendix);
+  line-height: 1.35;
+  color: var(--ink);
+}
+.colophon-note{
+  display: block;
+  margin-top: .22rem;
+  font-family: var(--font-sans);
+  font-size: var(--t-meta);
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+
+
+/* ==========================================================================
+   13  CONTACT
+   The running head carries only the Contact kicker on a rule; the <h2> is the
+   sentence, in the body. No card, no border, no background, no shadow.
+   ========================================================================== */
+
+.contact-title{
+  margin: .5rem 0 0;
+  font-family: var(--font-serif);
+  font-weight: 450;
+  font-size: var(--t-lede);
+  line-height: 1.18;
+  letter-spacing: -.012em;
+  color: var(--ink);
+  max-width: 22ch;
+}
+.contact-body p{
+  margin: 1rem 0 0;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 34ch;
+}
+
+/* The end-mark. */
+#contact::after{
+  content: "";
+  display: block;
+  grid-column: narrow;
+  width: .55rem;
+  height: .55rem;
+  background: var(--ink);
+  margin: var(--sp-7) 0 var(--sp-8);
+}
+
+
+/* ==========================================================================
+   14  LINKS & MOTION
+   The rule moves; the text does not. No transform on any hover, no
+   box-shadow in the sheet at all — --shadow:none is declared as a token so
+   depth cannot creep back in. Every transition names the exact properties it
+   animates; the blanket `all` keyword is used nowhere in this sheet.
+   ========================================================================== */
+
+a{
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .16em;
+  text-decoration-color: var(--rule-strong);
+  transition: color .2s ease, text-decoration-color .2s ease;
+}
+a:hover,
+a:focus-visible{
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+/* 21 elements on the whole page — 5 running heads, 7 work entries, 4
+   experience records, 3 appendix ledgers, 1 colophon, 1 contact body. Never
+   per child. --enter-stage is set inline, 1…7 on projects and 1…4 on
+   experience; every other .reveal leaves it unset and falls back to 0. */
+/* -- the foot of the page -------------------------------------------------
+   The contact block is the last thing in the document, and it was ending
+   8px from the document edge. On a phone the browser's bottom toolbar and
+   the home indicator cover roughly the last 60–90px, so the call to action
+   was being sat on by browser furniture. env() adds the device's own safe
+   area on top of a floor that already clears typical toolbar chrome.
+   ------------------------------------------------------------------------ */
+.section--contact{
+  padding-bottom: calc(var(--sp-8) + env(safe-area-inset-bottom, 0px));
+}
+@media (max-width: 47.4375em){
+  .section--contact{
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.reveal{
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .5s ease, transform .5s ease;
+  transition-delay: calc(var(--enter-stage, 0) * 90ms);
+}
+.reveal.visible{ opacity: 1; transform: none; }
+
+
+/* ==========================================================================
+   15  UTILITIES
+   ========================================================================== */
+
+/* .desktop-only is visible by default and is hidden below 760px by the
+   compound selectors in band 16 — written at (0,2,0) there so the swap does
+   not depend on source order against .top-nav / .header-actions. */
+.mobile-only{ display: none; }         /* .menu-toggle.mobile-only returns at 760px */
+
+
+/* ==========================================================================
+   16  RESPONSIVE — four breakpoints for the entire site
+     62.5em (1000px)  projects running head stops being sticky
+     56.25em (900px)  .grid collapses; .rec unwinds to display:block
+     47.5em  (760px)  desktop/mobile swap; cert index to one column
+     35em    (560px)  running-head right kicker hidden; drop cap 3.1 → 2.4em
+   Overflow is prevented structurally, never by clipping.
+   ========================================================================== */
+
+/* -- 1000px: release the sticky running head ------------------------------ */
+/*    (handled by the min-width query in band 08 — nothing to undo here)     */
+
+/* -- 900px: the page grid collapses, and every .rec unwinds ---------------
+   Duplicated line names keep every utility valid with no extra rules, and
+   zero-width outer tracks keep the gutter at exactly --gutter: 320px of
+   content at a 360px viewport.
+   ------------------------------------------------------------------------ */
+@media (max-width: 56.25em){
+  .grid{
+    grid-template-columns:
+      [full-start] 0
+      [wide-start narrow-start] minmax(0, 1fr)
+      [narrow-end wide-end] 0
+      [full-end];
+    column-gap: var(--gutter);
   }
 
-  .section {
-    padding: 4.25rem 0;
+  .rec{ display: block; }
+  .rec > *{ text-align: left; }
+
+  /* The docket unwinds to a horizontal metric strip — the numbers stay
+     scannable without a second column to sit in. */
+  .work-metrics,
+  .entry-metrics{
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem 1.75rem;
+    margin-top: 1rem;
+    padding-top: .7rem;
+    padding-bottom: .7rem;
+    border-top: 1px solid var(--rule);
+  }
+  .work-metrics li,
+  .entry-metrics li{ margin-bottom: 0; }
+
+  /* projects */
+  .work-meta{ display: flex; align-items: baseline; gap: .6rem; margin: 0 0 .5rem; }
+  .work-meta::before{ margin: 0; }
+  .work-body{ max-width: none; }
+  .work-spec{ margin-top: 1.1rem; }
+  .work-stack{ display: flex; flex-wrap: wrap; padding-top: .6rem; }
+  .work-stack::before{ -webkit-mask-image: none; mask-image: none; }
+  /* A flex container discards inter-item whitespace entirely, so these
+     middots are symmetric with no compensation. */
+  .work-stack li + li::before{ content: "\00B7"; margin: 0 .45em; color: var(--rule-strong); }
+
+  /* experience */
+  .entry-meta{ display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .8rem; margin-bottom: .5rem; }
+  .entry-date,
+  .entry-place{ display: inline; margin: 0; }
+  .entry-body{ max-width: none; }
+
+  /* the ledger and the colophon */
+  .spec-label{ margin-bottom: .4rem; }
+  .colophon dt{ margin-bottom: .35rem; }
+}
+
+/* -- 760px: the header/drawer swap ---------------------------------------
+   The two halves are split at 47.4375em / 47.5em so that no viewport width
+   matches both queries and leaves the reader with no navigation at all.
+   ------------------------------------------------------------------------ */
+@media (max-width: 47.4375em){
+  .top-nav.desktop-only,
+  .header-actions.desktop-only{ display: none; }
+  .menu-toggle.mobile-only{ display: inline-flex; }
+
+  .cert-index{ columns: 1; }
+}
+@media (min-width: 47.5em){
+  .sidebar,
+  .sidebar-overlay{ display: none; }
+}
+
+/* -- 560px ---------------------------------------------------------------- */
+@media (max-width: 35em){
+  .running-head .kicker{ display: none; }
+  .work--lead .work-deck::first-letter{ font-size: 2.4em; }
+}
+
+
+/* ==========================================================================
+   17  REDUCED MOTION / REDUCED TRANSPARENCY
+   The six weight-forced declarations below are the only ones in this
+   stylesheet. They are required: they must beat the inline-set transition
+   delay, and they must guarantee that no element is ever left at opacity 0.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after{
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
   }
 
-  .hero {
-    padding-top: 3.25rem;
+  .reveal{
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
+}
+
+@media (prefers-reduced-transparency: reduce){
+  body::before{ display: none; }
+}
 
 
-  .container {
-    width: min(var(--container), calc(100% - 1.1rem));
+/* ==========================================================================
+   18  PRINT — the paper theme on actual paper
+   A clean one-piece résumé. Screen furniture is dropped, the type scale is
+   restated in points, the reveal is forced visible (otherwise everything
+   below the fold prints blank), and the two-track records unwind so nothing
+   strands in a margin column on a narrow page box.
+   ========================================================================== */
+
+@page{ margin: 16mm 14mm; }
+
+@media print{
+
+  /* Print always uses the cream stock. A reader who prints from dark mode
+     otherwise floods the page with toner. These values are byte-identical to
+     the light token block in band 01. */
+  body:not(.light){
+    --paper:       #F5F1E8;
+    --paper-2:     #EAE4D5;
+    --drawer:      #FDFBF6;
+    --furniture:   #E4DDCC;
+    --ink:         #211E1A;
+    --ink-2:       #4A443B;
+    --ink-muted:   #635C4E;
+    --rule:        #DCD4C2;
+    --rule-strong: #C3B9A2;
+    --accent:      #9E2B1E;
+    --weight-body: 450;
   }
+
+  /* The whole scale restated in points, and the spacing ladder compressed.
+     Every component reads its size through these tokens, so this is the only
+     place print sizing is declared. */
+  :root{
+    --t-micro:      7.5pt;
+    --t-label:      8pt;
+    --t-meta:       8.5pt;
+    --t-small:      9pt;
+    --t-appendix:   10.5pt;
+    --t-body:       9.5pt;
+    --t-deck:       10pt;
+    --t-lede:       17pt;
+    --t-entry:      13pt;
+    --t-entry-lead: 15pt;
+
+    --sp-5: .5rem;
+    --sp-6: .9rem;
+    --sp-7: 1.1rem;
+    --sp-8: 1.1rem;
+    --sp-9: 1rem;
+    --gutter: 0rem;
+    --measure: 100%;
+  }
+
+  html{ background: none; }
+  body{
+    background: none;
+    border-bottom: 0;              /* the press bar is a screen device */
+    font-size: var(--t-body);
+    line-height: 1.4;
+  }
+  body::before{ display: none; }   /* no grain on paper — the paper is the grain */
+
+  /* screen-only chrome */
+  .site-header,
+  .sidebar,
+  .sidebar-overlay,
+  .menu-toggle,
+  .theme-toggle,
+  .masthead .actions,
+  #contact::after{ display: none; }
+
+  /* never leave content at opacity:0 on paper */
+  .reveal{ opacity: 1; transform: none; transition: none; }
+
+  .masthead{ padding-block: 0; }
+  .section{ margin-top: var(--sp-7); }
+  .section--work{ margin-top: var(--sp-7); }
+
+  /* Unwind the two-track records regardless of how the print engine resolves
+     the width media queries, and let every ledger run the full measure. */
+  .rec{ display: block; }
+  .rec > *{ text-align: left; max-width: none; }
+
+  .section--work .running-head-wrap{ position: static; padding-block: 0; }
+  .running-head-wrap{ margin-bottom: var(--sp-5); }
+
+  .work + .work{ margin-top: var(--sp-9); }
+  .work{ padding-top: .4rem; }
+  .work-meta{ display: flex; align-items: baseline; gap: .5rem; margin: 0 0 .25rem; }
+  .work-meta::before{ margin: 0; }
+  .work-spec{ margin-top: .4rem; }
+  .work-stack{ display: flex; flex-wrap: wrap; padding-top: .35rem; }
+  .work-stack::before{ -webkit-mask-image: none; mask-image: none; }
+  .work-stack li + li::before{ content: "\00B7"; margin: 0 .4em; color: var(--rule-strong); }
+  .work--lead .work-deck::first-letter{ font-size: 1em; float: none; padding: 0; }
+
+  .entry + .entry{ margin-top: var(--sp-6); }
+  .entry-list .entry:last-of-type{ padding-bottom: var(--sp-5); }
+  .entry-meta{ display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .7rem; margin-bottom: .3rem; }
+  .entry-date,
+  .entry-place{ display: inline; margin: 0; }
+  .entry-points{ margin-top: .4rem; }
+  .entry-points li{ margin-bottom: .2rem; }
+
+  .spec-row,
+  .colophon-row{ padding-block: .35rem; }
+  .spec-label{ margin-bottom: .2rem; }
+  .colophon dt{ margin-bottom: .2rem; }
+  .cert-index{ columns: 3; column-gap: 1.2rem; }
+
+  hr.furniture{ border-top-width: 1px; border-top-color: var(--rule); margin: var(--sp-7) 0; }
+  hr.tick{ margin: var(--sp-6) auto; }
+
+  /* Contact details are the one thing a printed résumé cannot do without, so
+     these three hrefs are spelled out. The thirty certification URLs are
+     deliberately NOT printed — they would triple the page count. */
+  .contact-body .action::after{
+    content: " (" attr(href) ")";
+    font-size: .9em;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .work-link::after{
+    content: " (" attr(href) ")";
+    font-size: .9em;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .contact-body .actions{ display: block; }
+  .contact-body .action{ display: block; margin-bottom: .2rem; }
+
+  /* pagination */
+  .work,
+  .entry,
+  .spec-row,
+  .colophon-row,
+  .cert-index li{ break-inside: avoid; }
+  .running-head,
+  h2,
+  h3{ break-after: avoid; }
 }

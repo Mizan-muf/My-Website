@@ -2,589 +2,141 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Meezaan Chishty | AI/ML Engineer</title>
   <meta
     name="description"
-    content="Meezaan Chishty — AI/ML Engineer focused on backend systems, document AI, analytics platforms, and automation."
+    content="Meezaan Chishty — AI/ML Engineer (model training & applied AI). Explore the portfolio as a 2D dungeon: walk the corridor, read the monoliths."
   />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-  />
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="theme-color" content="#0b0b10" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400..700;1,400..700&display=swap">
+  <link rel="stylesheet" href="game/game.css">
 </head>
-<body class="light">
-  <div class="bg-grid"></div>
-  <img src="assets/blob_bg-min.png" class="mmm-shape blob-1" alt="" aria-hidden="true">
-  <img src="assets/Abstract-3d-Shape---10.png" class="mmm-shape abstract-1" alt="" aria-hidden="true">
-  <img src="assets/Abstract-3d-Shape---18.png" class="mmm-shape abstract-2" alt="" aria-hidden="true">
-  <img src="assets/Abstract-3d-Shape---36.png" class="mmm-shape abstract-3" alt="" aria-hidden="true">
-  <img src="assets/Abstract-3d-Shape---59.png" class="mmm-shape abstract-4" alt="" aria-hidden="true">
+<body>
 
+  <a class="skip" href="classic.html">Skip the game — plain view of the portfolio</a>
 
-  <header class="site-header">
-    <div class="container nav-wrap">
-      <a class="brand" href="#top">Meezaan Chishty</a>
+  <h1 class="sr-only">Meezaan Chishty — AI/ML Engineer · Backend Developer · Product Builder</h1>
 
-      <nav class="top-nav desktop-only">
-        <a href="#projects">Projects</a>
-        <a href="#experience">Experience</a>
-        <a href="#skills">Skills</a>
-        <a href="#certifications">Certificates</a>
-      </nav>
+  <div class="stage" id="stage">
+    <canvas id="screen" tabindex="0" role="application"
+            aria-label="Portfolio game. Arrow keys walk, Space jumps, Up or E reads the nearest monolith, Tab opens the gate map."></canvas>
+    <p class="loading" aria-hidden="true">Lighting the torches…</p>
+  </div>
 
-      <div class="header-actions desktop-only">
-        <a href="mailto:syedmeezan905@gmail.com" class="header-icon" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
-        <a href="tel:+917426917505" class="header-icon" aria-label="Phone"><i class="fa-solid fa-phone"></i></a>
-        <a href="https://github.com/Mizan-muf" target="_blank" rel="noreferrer" class="header-icon" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-        <a href="https://www.linkedin.com/in/syed-mohammed-meezaan-chishty-19a4b0338" target="_blank" rel="noreferrer" class="header-icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-          <i class="fa-solid fa-moon"></i>
-        </button>
+  <!-- ── Title card ─────────────────────────────────────────────────── -->
+  <div class="title" id="title" role="dialog" aria-modal="true" aria-labelledby="titleName" hidden>
+    <div class="title-card">
+      <p class="title-kicker">A portfolio you can walk through</p>
+      <h2 class="title-name" id="titleName">Meezaan Chishty</h2>
+      <p class="title-role">AI/ML Engineer · Model Training &amp; Applied AI</p>
+      <p class="title-lede">Walk <strong>right →</strong> through six gates. Each glowing monolith holds a project, a role or a skill.</p>
+      <div class="title-actions">
+        <button type="button" class="title-start" id="titleStart">Enter the dungeon <span aria-hidden="true">→</span></button>
+        <a class="title-plain" href="classic.html">Prefer reading? <u>Plain view</u></a>
       </div>
-
-      <button class="menu-toggle mobile-only" id="menuToggle" aria-label="Toggle menu">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-    </div>
-  </header>
-
-  <div class="sidebar" id="sidebar">
-    <button class="sidebar-close" id="sidebarClose"><i class="fa-solid fa-xmark"></i></button>
-    <nav class="sidebar-nav">
-        <a href="#projects" class="sidebar-link">Projects</a>
-        <a href="#experience" class="sidebar-link">Experience</a>
-        <a href="#skills" class="sidebar-link">Skills</a>
-        <a href="#certifications" class="sidebar-link">Certificates</a>
-    </nav>
-    <div class="sidebar-actions">
-        <a href="mailto:syedmeezan905@gmail.com" class="header-icon" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
-        <a href="tel:+917426917505" class="header-icon" aria-label="Phone"><i class="fa-solid fa-phone"></i></a>
-        <a href="https://github.com/Mizan-muf" target="_blank" rel="noreferrer" class="header-icon" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-        <a href="https://www.linkedin.com/in/syed-mohammed-meezaan-chishty-19a4b0338" target="_blank" rel="noreferrer" class="header-icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
-        <button class="theme-toggle" id="sidebarThemeToggle" aria-label="Toggle theme">
-          <i class="fa-solid fa-moon"></i>
-        </button>
+      <p class="title-keys"><kbd>←</kbd><kbd>→</kbd> walk · <kbd>Space</kbd> jump · <kbd>↑</kbd>/<kbd>E</kbd> read · <kbd>Tab</kbd> map</p>
     </div>
   </div>
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <main id="top">
-    <section class="hero section">
-      <div class="container hero-grid">
-        <div class="hero-copy reveal">
-          <p class="eyebrow">AI/ML Engineer · Backend Developer · Product Builder</p>
-          <h1>
-            Building reliable AI systems, backend workflows, and data-driven products.
-          </h1>
-          <p class="hero-text">
-            I’m Meezaan Chishty, an engineer focused on AI tooling, document intelligence,
-            automation pipelines, and product-oriented backend development.
-          </p>
+  <!-- ── HUD ─────────────────────────────────────────────────────────── -->
+  <header class="hud">
+    <div class="hud-where">
+      <p class="hud-section" id="hudSection">Atrium</p>
+      <p class="hud-progress">
+        <span><span id="hudRead">0</span> / <span id="hudTotal">25</span> read</span>
+        <span class="hud-bar" aria-hidden="true"><span id="hudBar"></span></span>
+      </p>
+      <p class="hud-next" id="hudNext" aria-live="polite"></p>
+    </div>
+    <nav class="hud-actions" aria-label="Quick links">
+      <button type="button" class="hud-btn" id="btnMap">Map <kbd>Tab</kbd></button>
+      <button type="button" class="hud-btn hud-btn--gold" id="btnContact">Contact</button>
+      <a class="hud-btn" href="resume/meezaan_chishty_resume.pdf" target="_blank" rel="noreferrer">Résumé</a>
+      <a class="hud-btn hud-btn--quiet" href="classic.html">Plain view</a>
+    </nav>
+  </header>
 
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#projects">View Projects</a>
-            <a class="btn btn-secondary" href="resume/meezaan_chishty_resume.pdf" target="_blank" rel="noreferrer"><i class="fa-solid fa-file-pdf"></i> Resume</a>
-            <a class="btn btn-secondary" href="mailto:syedmeezan905@gmail.com">Contact Me</a>
-          </div>
-        </div>
+  <p class="hint" id="hint"><kbd>←</kbd><kbd>→</kbd> walk · <kbd>Space</kbd> jump · <kbd>↑</kbd>/<kbd>E</kbd> read · <kbd>Tab</kbd> map</p>
 
-        <div class="hero-card reveal delay-1">
-          <div class="stat-card">
-            <span class="stat-label">Current Role</span>
-            <strong>AI/ML Engineer</strong>
-            <p>FBSPL · Udaipur, India</p>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Focus Areas</span>
-            <strong>Document AI · APIs · Extraction & intelligence</strong>
-            <p>LLM tooling, extraction systems, analytics workflows</p>
-          </div>
-        </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- ── Touch controls ─────────────────────────────────────────────── -->
+  <div class="touch" aria-hidden="true">
+    <div class="touch-move">
+      <button type="button" class="t-btn" id="tLeft" tabindex="-1">◀</button>
+      <button type="button" class="t-btn" id="tRight" tabindex="-1">▶</button>
+    </div>
+    <div class="touch-act">
+      <button type="button" class="t-btn t-btn--read" id="tRead" tabindex="-1">READ</button>
+      <button type="button" class="t-btn" id="tJump" tabindex="-1">JUMP</button>
+    </div>
+  </div>
+
+  <!-- ── Record panel ───────────────────────────────────────────────── -->
+  <dialog class="panel" id="panel" aria-labelledby="panelTitle">
+    <div class="panel-card">
+      <header class="panel-head">
+        <p class="panel-kicker" id="panelKicker"></p>
+        <h2 class="panel-title" id="panelTitle"></h2>
+        <button type="button" class="panel-close" id="close" aria-label="Close (Esc)">✕</button>
+      </header>
+      <div class="panel-body" id="panelBody"></div>
+      <footer class="panel-foot">
+        <button type="button" class="panel-nav" id="prev"><b aria-hidden="true">←</b> <span></span></button>
+        <button type="button" class="panel-nav panel-nav--next" id="next"><span></span> <b aria-hidden="true">→</b></button>
+      </footer>
+    </div>
+  </dialog>
+
+  <!-- ── Gate map ───────────────────────────────────────────────────── -->
+  <dialog class="panel panel--map" id="map" aria-labelledby="mapTitle">
+    <div class="panel-card">
+      <header class="panel-head">
+        <p class="panel-kicker">Fast travel</p>
+        <h2 class="panel-title" id="mapTitle">The Gates</h2>
+        <button type="button" class="panel-close" id="mapClose" aria-label="Close (Esc)">✕</button>
+      </header>
+      <div class="panel-body">
+        <ol class="map-list" id="mapList"></ol>
+        <p class="p-actions">
+          <button type="button" class="p-btn" data-open-contact>Contact</button>
+          <a class="p-btn" href="resume/meezaan_chishty_resume.pdf" target="_blank" rel="noreferrer">Résumé (PDF) <span aria-hidden="true">↗</span></a>
+          <a class="p-btn" href="classic.html">Plain view</a>
+        </p>
+        <dl class="map-keys">
+          <div><dt>Walk</dt><dd>← → or A D</dd></div>
+          <div><dt>Jump</dt><dd>Space (hold for height)</dd></div>
+          <div><dt>Read</dt><dd>↑, E or Enter — or click a monolith</dd></div>
+          <div><dt>In a record</dt><dd>← → previous / next · Esc close</dd></div>
+        </dl>
       </div>
-    </section>
+    </div>
+  </dialog>
 
-    <section id="projects" class="section">
-      <div class="container">
-        <div class="section-head reveal">
-          <p class="section-kicker">Selected Work</p>
-          <h2>Projects</h2>
-        </div>
+  <noscript>
+    <div class="noscript">
+      <h2>Meezaan Chishty — AI/ML Engineer</h2>
+      <p>This portfolio is a small browser game and needs JavaScript. Everything in it is also in the
+        <a href="classic.html">plain view</a>.</p>
+      <p><a href="mailto:syedmeezan905@gmail.com">syedmeezan905@gmail.com</a> ·
+        <a href="https://www.linkedin.com/in/syed-mohammed-meezaan-chishty-19a4b0338">LinkedIn</a> ·
+        <a href="https://github.com/Mizan-muf">GitHub</a> ·
+        <a href="resume/meezaan_chishty_resume.pdf">Résumé (PDF)</a></p>
+    </div>
+  </noscript>
 
-        <div class="project-grid">
-          <article class="project-card card reveal">
-            <div class="project-top">
-              <h3>Hippo Cortex Retrieve &mdash; Public Research</h3>
-              <span class="tag">2026</span>
-            </div>
-            <p>
-              An open-source research architecture for long-term AI memory and context retrieval.
-            </p>
-            <p>
-              Integrates a Qdrant hybrid vector store, a Kuzu graph database for entity relationships, and an immutable Markdown file store, powered by local LLMs via Ollama.
-            </p>
-            <div class="stack">
-              <span>Python</span>
-              <span>Qdrant</span>
-              <span>Kuzu Graph</span>
-              <span>Ollama</span>
-              <span>Docker</span>
-              <span>RAG</span>
-            </div>
-            <a
-              class="project-link"
-              href="https://github.com/Mizan-muf/Hippo-Cortex-Retrive"
-              target="_blank"
-              rel="noreferrer"
-            >
-              View Repository <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </article>
-
-          <article class="project-card card reveal delay-1">
-            <div class="project-top">
-              <h3>FBSPLAI &mdash; AI Insurance Sales Platform</h3>
-              <span class="tag">2025</span>
-            </div>
-            <p>
-              Built a full-stack AI insurance sales platform across 3 portals (client, admin, AI chat) with a Next.js 14 monorepo (Turborepo), shared Radix UI components, and Tailwind CSS.
-            </p>
-            <p>
-              Architected 10 backend microservices (FastAPI/Python) including document extraction (LangChain/LangGraph), quote comparison, and AI chat, orchestrated with Docker, Celery, MongoDB, and Redis.
-            </p>
-            <div class="stack">
-              <span>Next.js 14</span>
-              <span>FastAPI</span>
-              <span>Python</span>
-              <span>MongoDB</span>
-              <span>Celery</span>
-              <span>LangGraph</span>
-              <span>Docker</span>
-            </div>
-          </article>
-
-          <article class="project-card card reveal">
-            <div class="project-top">
-              <h3>Vocalytics-V0.3</h3>
-              <span class="tag">2023</span>
-            </div>
-            <p>
-              Built an AI-driven sales analytics platform that converts voice commands
-              into Plotly-based analytics workflows and natural-language summaries using OpenAI models.
-            </p>
-            <p>
-              Added automatic CSV ingestion with encoding detection, AST-validated code execution,
-              LightGBM forecasting, and Windows deployment.
-            </p>
-            <div class="stack">
-              <span>Python</span>
-              <span>Flask</span>
-              <span>Pandas</span>
-              <span>Plotly</span>
-              <span>OpenAI API</span>
-              <span>LightGBM</span>
-            </div>
-            <a
-              class="project-link"
-              href="https://github.com/Mizan-muf/Vocalytics-V0.3"
-              target="_blank"
-              rel="noreferrer"
-            >
-              View Project <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </article>
-
-          <article class="project-card card reveal delay-1">
-            <div class="project-top">
-              <h3>Intelli-News-v1.1</h3>
-              <span class="tag">2024</span>
-            </div>
-            <p>
-              Developed a modular news intelligence pipeline for crawling, scraping,
-              proxy management, and SQLite-based ingestion across regional news sources.
-            </p>
-            <p>
-              Built robots-aware crawler/scraper components with retry logic, proxy pooling,
-              browser fallback, and batch ingestion.
-            </p>
-            <div class="stack">
-              <span>Python</span>
-              <span>curl_cffi</span>
-              <span>BeautifulSoup</span>
-              <span>SQLite</span>
-              <span>Playwright</span>
-              <span>JSON</span>
-            </div>
-            <a
-              class="project-link"
-              href="https://github.com/Mizan-muf/Newsletter-Intelli-version-1.1.0"
-              target="_blank"
-              rel="noreferrer"
-            >
-              View Project <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </article>
-
-          <article class="project-card card reveal">
-            <div class="project-top">
-              <h3>ACORD Forms Extraction</h3>
-              <span class="tag">2025</span>
-            </div>
-            <p>
-              Engineered a layout-aware ACORD extraction pipeline using visual learning,
-              computer vision, and OCR for text, tables, checkboxes, and document structure.
-            </p>
-            <p>
-              Added a self-learning flow through visual-model tuning and version switching
-              for safer iteration and rollback.
-            </p>
-            <div class="stack">
-              <span>Python</span>
-              <span>Computer Vision</span>
-              <span>OCR</span>
-              <span>FastAPI</span>
-              <span>PostgreSQL</span>
-            </div>
-          </article>
-
-          <article class="project-card card reveal">
-            <div class="project-top">
-              <h3>Neo Wolf</h3>
-              <span class="tag">2026</span>
-            </div>
-            <p>
-              Built a custom 2.5D retro game engine featuring a native C++ core, SDL2-backed software rendering, and a C API boundary that connects to a C# interop layer for scriptable gameplay logic.
-            </p>
-            <p>
-              Developed a complete software raycaster with texture-mapped walls, billboard sprite sorting, basic lighting, particle systems, and a fully file-driven asset pipeline for maps and entity configurations.
-            </p>
-            <div class="stack">
-              <span>C++</span>
-              <span>C#</span>
-              <span>SDL2</span>
-              <span>CMake</span>
-              <span>Raycasting</span>
-              <span>Software Rendering</span>
-            </div>
-            <a
-              class="project-link"
-              href="https://github.com/Mizan-muf/Neo-Wolf-v1"
-              target="_blank"
-              rel="noreferrer"
-            >
-              View Project <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </article>
-
-          <article class="project-card card reveal delay-1">
-            <div class="project-top">
-              <h3>Distributed Network Monitoring Platform</h3>
-              <span class="tag">2025</span>
-            </div>
-            <p>
-              Built a two-tier server + agent platform for inventory, health metrics,
-              and DPI alerts across <strong>700+ endpoints</strong>.
-            </p>
-            <p>
-              Achieved sub-<strong>200ms</strong> updates with dashboards and operational alerting.
-            </p>
-            <div class="stack">
-              <span>Python</span>
-              <span>Flask-Socket.IO</span>
-              <span>MongoDB</span>
-              <span>Redis</span>
-              <span>Elasticsearch</span>
-              <span>Docker</span>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="experience" class="section">
-      <div class="container">
-        <div class="section-head reveal">
-          <p class="section-kicker">Career</p>
-          <h2>Experience</h2>
-        </div>
-
-        <div class="timeline">
-          <article class="timeline-item card reveal">
-            <div class="timeline-top">
-              <div>
-                <h3>AI/ML Engineer</h3>
-                <p class="company">FBSPL</p>
-              </div>
-              <div class="timeline-meta">
-                <span>Feb 2025— Present</span>
-                <span>India · Udaipur</span>
-              </div>
-            </div>
-            <ul>
-              <li>Built internal AI tooling, ACORD extraction workflows, and automated reporting pipelines for document and operations automation.</li>
-              <li>Delivered a distributed monitoring platform across <strong>700+ endpoints</strong> with sub-<strong>200ms</strong> live updates, improving visibility and reducing MTTR.</li>
-              <li>Improved throughput and reliability using Redis-backed queues and Elasticsearch/SQL optimization, reducing P95 latency by <strong>45%</strong>.</li>
-            </ul>
-          </article>
-
-          <article class="timeline-item card reveal delay-1">
-            <div class="timeline-top">
-              <div>
-                <h3>Python Developer</h3>
-                <p class="company">NeoPanda Tech</p>
-              </div>
-              <div class="timeline-meta">
-                <span>Mar 2024 — Feb 2025</span>
-                <span>China · Shenzhen [Remote]</span>
-              </div>
-            </div>
-            <ul>
-              <li>Developing backend APIs and Python automation for data-driven applications, focused on scalable services and structured pipelines.</li>
-              <li>Contributing to <strong>Intelli-News</strong> through API integration, crawler/scraper workflows, and ingestion automation for newsletter generation.</li>
-            </ul>
-          </article>
-
-          <article class="timeline-item card reveal">
-            <div class="timeline-top">
-              <div>
-                <h3>Lead Product Engineer</h3>
-                <p class="company">Zume, Inc.</p>
-              </div>
-              <div class="timeline-meta">
-                <span>Apr 2023 — Mar 2024</span>
-                <span>USA · California [Remote]</span>
-              </div>
-            </div>
-            <ul>
-              <li>Led product development for AI/data applications, owning architecture, feature delivery, and end-to-end execution.</li>
-              <li>Contributed to <strong>Vocalytics-V0.3</strong>, including OpenAI-powered analytics workflows, forecasting features, and backend design.</li>
-            </ul>
-          </article>
-
-          <article class="timeline-item card reveal delay-1">
-            <div class="timeline-top">
-              <div>
-                <h3>AI Intern</h3>
-                <p class="company">IIT Roorkee</p>
-              </div>
-              <div class="timeline-meta">
-                <span>Jan 2024 — Feb 2024</span>
-                <span>India</span>
-              </div>
-            </div>
-            <ul>
-              <li>Built ML models for sentiment/emotion prediction and small-business sales forecasting.</li>
-              <li>Worked with SLM models to improve result quality and experimentation outcomes.</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="skills" class="section">
-      <div class="container">
-        <div class="section-head reveal">
-          <p class="section-kicker">Capabilities</p>
-          <h2>Skills</h2>
-        </div>
-
-        <div class="skills-layout">
-          <div class="card reveal">
-            <h3>Languages</h3>
-            <div class="pill-wrap">
-              <span class="pill">Python</span>
-              <span class="pill">SQL</span>
-              <span class="pill">JavaScript/TypeScript</span>
-              <span class="pill">Java</span>
-              <span class="pill">C#</span>
-              <span class="pill">Go</span>
-              <span class="pill">HTML/CSS</span>
-            </div>
-          </div>
-
-          <div class="card reveal delay-1">
-            <h3>Backend</h3>
-            <div class="pill-wrap">
-              <span class="pill">FastAPI</span>
-              <span class="pill">Flask</span>
-              <span class="pill">Socket.IO</span>
-              <span class="pill">REST APIs</span>
-              <span class="pill">WebSockets</span>
-              <span class="pill">JWT/RBAC</span>
-            </div>
-          </div>
-
-          <div class="card reveal">
-            <h3>Data & Infra</h3>
-            <div class="pill-wrap">
-              <span class="pill">PostgreSQL</span>
-              <span class="pill">MySQL</span>
-              <span class="pill">MongoDB</span>
-              <span class="pill">Redis</span>
-              <span class="pill">Elasticsearch</span>
-              <span class="pill">Docker</span>
-              <span class="pill">AWS</span>
-              <span class="pill">Git</span>
-            </div>
-          </div>
-
-          <div class="card reveal delay-1">
-            <h3>Domains</h3>
-            <div class="pill-wrap">
-              <span class="pill">Document AI</span>
-              <span class="pill">Information Extraction</span>
-              <span class="pill">ETL / Reporting</span>
-              <span class="pill">LLM Tooling</span>
-              <span class="pill">Agents</span>
-              <span class="pill">Observability</span>
-              <span class="pill">Telemetry</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="certifications" class="section">
-      <div class="container">
-        <div class="section-head reveal">
-          <p class="section-kicker">Continuous Learning</p>
-          <h2>Certifications</h2>
-        </div>
-
-        <div class="skills-layout">
-          <div class="card reveal">
-            <h3>AI / Machine Learning</h3>
-            <div class="pill-wrap">
-              <a href="https://www.linkedin.com/learning/certificates/9fd3c7aac08df00e7bd910ba2ddf330de3ddd54b14f48c74923e55dc633d096a" class="pill" target="_blank" rel="noreferrer">Hands-On AI: LLM Apps</a>
-              <a href="https://www.linkedin.com/learning/certificates/699efc9ed8fb2419bc9c506e3cb97cf91e540e8d88a3c0f7b9b9dbe8b59dc786" class="pill" target="_blank" rel="noreferrer">Intro to AI</a>
-              <a href="https://www.linkedin.com/learning/certificates/6b11ba7b0547ec739724ecda0df645128b7741fbfc9a2d458a8a850cf9be384f" class="pill" target="_blank" rel="noreferrer">Deep Learning with TensorFlow</a>
-              <a href="https://www.linkedin.com/learning/certificates/71a636520507579ad303e5b71618ea025b971521e967830719874201ce2de906" class="pill" target="_blank" rel="noreferrer">Model Optimization & Tuning</a>
-              <a href="https://www.linkedin.com/learning/certificates/b79f4dde22949acc6dced9795615c8d63376648cf0cb27f03d97007fbadeb957" class="pill" target="_blank" rel="noreferrer">GCP for ML</a>
-              <a href="https://www.linkedin.com/learning/certificates/2dd54d1e822f5411bd44cf1693401ff446ea4c2dffa195e85fafc7eb75fb5e7b" class="pill" target="_blank" rel="noreferrer">R for Data Science</a>
-            </div>
-          </div>
-
-          <div class="card reveal delay-1">
-            <h3>Generative AI</h3>
-            <div class="pill-wrap">
-              <a href="https://www.linkedin.com/learning/certificates/062a1453c1af811329321b641d983520828618bf8d4fb77beb0d0f79912ceb1a" class="pill" target="_blank" rel="noreferrer">Career Essentials in GenAI</a>
-              <a href="https://www.linkedin.com/learning/certificates/207fe0df385e66e87ab1f810a442a463a92ef8701b7caa2a12009f0612ccd4f7" class="pill" target="_blank" rel="noreferrer">What Is GenAI?</a>
-              <a href="https://www.linkedin.com/learning/certificates/d4c6d02497bb3aa0cd99ae76312da50ea11390796ca7455257982430e61358a5" class="pill" target="_blank" rel="noreferrer">GenAI: Evolution of Search</a>
-              <a href="https://www.linkedin.com/learning/certificates/ee072711312b59d98735eb368c9d759385e7790d543e6506d109a3bfbe07bbb4" class="pill" target="_blank" rel="noreferrer">Ethics in GenAI</a>
-            </div>
-          </div>
-
-          <div class="card reveal">
-            <h3>Backend & Web</h3>
-            <div class="pill-wrap">
-              <a href="https://www.linkedin.com/learning/certificates/7cbcd4d0c502bc42a5c3d0d964295ecc5578787d12bb9cabec34adad3184a6f0" class="pill" target="_blank" rel="noreferrer">Django Essential Training</a>
-              <a href="https://www.linkedin.com/learning/certificates/d4c6d02497bb3aa0cd99ae76312da50ea11390796ca7455257982430e61358a5" class="pill" target="_blank" rel="noreferrer">Node.js Essential Training</a>
-              <a href="https://coursera.org/verify/KVKSX7TK74VA" class="pill" target="_blank" rel="noreferrer">Intro to HTML</a>
-              <a href="https://coursera.org/verify/FDFLFYXPHMVJ" class="pill" target="_blank" rel="noreferrer">Intro to CSS</a>
-              <a href="https://www.coursera.org/account/accomplishments/records/YV9HQFZJ888P" class="pill" target="_blank" rel="noreferrer">TCP/IP & Advanced Topics</a>
-            </div>
-          </div>
-
-          <div class="card reveal delay-1">
-            <h3>OOP & Java</h3>
-            <div class="pill-wrap">
-              <a href="https://www.coursera.org/account/accomplishments/specialization/W45B4GT9JDVN" class="pill" target="_blank" rel="noreferrer">Core Java Specialization</a>
-              <a href="https://www.coursera.org/account/accomplishments/records/TH96V3VSDRMY" class="pill" target="_blank" rel="noreferrer">Intro to Java</a>
-              <a href="https://www.coursera.org/account/accomplishments/records/GJJZMWARA48V" class="pill" target="_blank" rel="noreferrer">Intro to OOP with Java</a>
-              <a href="https://www.coursera.org/account/accomplishments/records/MCJ6NDFM9R2Z" class="pill" target="_blank" rel="noreferrer">OOP Hierarchies in Java</a>
-              <a href="https://www.coursera.org/account/accomplishments/records/XM65WYFHTWCV" class="pill" target="_blank" rel="noreferrer">Java Class Library</a>
-              <a href="https://www.coursera.org/account/accomplishments/records/RNJL26YLE6PE" class="pill" target="_blank" rel="noreferrer">Fundamentals of Data Warehousing</a>
-            </div>
-          </div>
-
-          <div class="card reveal">
-            <h3>Game Dev & C#</h3>
-            <div class="pill-wrap">
-              <a href="https://coursera.org/verify/specialization/BW5XKXSTZPNE" class="pill" target="_blank" rel="noreferrer">C# for Unity (Specialization)</a>
-              <a href="https://coursera.org/verify/FZMJBXQJ4MMB" class="pill" target="_blank" rel="noreferrer">Intro to C# and Unity</a>
-              <a href="https://coursera.org/verify/9DCFWKXMJWX8" class="pill" target="_blank" rel="noreferrer">More C# and Unity</a>
-              <a href="https://coursera.org/verify/LZKX3K8HV4MG" class="pill" target="_blank" rel="noreferrer">C# Class Development</a>
-              <a href="https://coursera.org/verify/CWUJQVQ2F3Y3" class="pill" target="_blank" rel="noreferrer">Intermediate OOP for Unity</a>
-              <a href="https://coursera.org/verify/DTC8X3TW8V3K" class="pill" target="_blank" rel="noreferrer">Intro to Scratch</a>
-              <a href="https://www.coursera.org/account/accomplishments/records/TRJK53CRP2P4" class="pill" target="_blank" rel="noreferrer">Intro to Game Design</a>
-            </div>
-          </div>
-
-          <div class="card reveal delay-1">
-            <h3>Productivity & Tools</h3>
-            <div class="pill-wrap">
-              <a href="https://www.linkedin.com/learning/certificates/4e2bb0ad9a4bbaa4aacd3ef330606cbe0a0288fe2810625598d7053fad117e71" class="pill" target="_blank" rel="noreferrer">Microsoft Copilot</a>
-              <a href="https://www.linkedin.com/learning/certificates/31b303a1c3ff10ca975b902b514e43cc609c64911e21d0f617fa1f26893015db" class="pill" target="_blank" rel="noreferrer">M365 Copilot for Work</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="education" class="section">
-      <div class="container">
-        <div class="section-head reveal">
-          <p class="section-kicker">Academic Background</p>
-          <h2>Education</h2>
-        </div>
-
-        <div class="edu-grid">
-          <article class="card reveal">
-            <h3>Jamia Hamdard University</h3>
-            <p class="muted">MCA Computer Science</p>
-            <span class="edu-date">Jan 2025 — Present</span>
-            <p class="edu-score">GPA: 8.95 / 10</p>
-          </article>
-
-          <article class="card reveal delay-1">
-            <h3>Manipal University Jaipur</h3>
-            <p class="muted">Bachelor of Computer Applications</p>
-            <span class="edu-date">Oct 2021 — Apr 2024</span>
-            <p class="edu-score">GPA: 8.88 / 10 (≈ 3.55 / 4.00)</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="section section-last">
-      <div class="container">
-        <div class="contact-card card reveal">
-          <p class="section-kicker">Contact</p>
-          <h2>Let’s build something useful.</h2>
-          <p>
-            Open to product engineering, AI engineering, backend development, and applied ML opportunities.
-          </p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="mailto:syedmeezan905@gmail.com">Email Me</a>
-            <a
-              class="btn btn-secondary"
-              href="https://www.linkedin.com/in/syed-mohammed-meezaan-chishty-19a4b0338"
-              target="_blank"
-              rel="noreferrer"
-            >
-              LinkedIn
-            </a>
-            <a
-              class="btn btn-secondary"
-              href="https://github.com/Mizan-muf"
-              target="_blank"
-              rel="noreferrer"
-            >
-              GitHub
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <script src="script.js"></script>
+  <script src="game/palette.js"></script>
+  <script src="game/font.js"></script>
+  <script src="game/sprites.js"></script>
+  <script src="game/content.js"></script>
+  <script src="game/world.js"></script>
+  <script src="game/render.js"></script>
+  <script src="game/engine.js"></script>
+  <script src="game/ui.js"></script>
+  <script src="game/main.js"></script>
 </body>
 </html>
