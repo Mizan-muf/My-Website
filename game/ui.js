@@ -19,6 +19,13 @@
   var order = []; // every thing, walking order — for prev / next
   var toastTimer = 0;
 
+  /* the game's move / jump / read keys (engine.js), minus the map keys */
+  var CLOSE_KEYS = {
+    ArrowLeft: 1, KeyA: 1, ArrowRight: 1, KeyD: 1,
+    ArrowUp: 1, KeyW: 1, Space: 1, KeyZ: 1, KeyK: 1,
+    KeyE: 1, Enter: 1
+  };
+
   function $(id) {
     return document.getElementById(id);
   }
@@ -420,10 +427,18 @@
       if (e.target === els.panel) close();
       if (e.target.closest("[data-open-contact]")) openContact();
     });
+    /* Any movement or read key closes the record and hands control back
+       to the game. Enter / Space still activate a focused link or button;
+       held-key repeats are ignored so the key that opened it can't close it. */
     els.panel.addEventListener("keydown", function (e) {
-      if (e.target.closest("a, button")) return;
-      if (e.key === "ArrowRight") step(1);
-      if (e.key === "ArrowLeft") step(-1);
+      if (!CLOSE_KEYS[e.code] || e.repeat) return;
+      var onControl = e.target.closest("a, button") && e.target !== els.close;
+      if (onControl && (e.code === "Enter" || e.code === "Space")) return;
+      e.preventDefault();
+      /* ↑ / E / Enter would re-read the monolith; walk and jump keys pass
+         through so the player moves off straight away */
+      if (/^(ArrowUp|KeyW|KeyE|Enter)$/.test(e.code)) e.stopPropagation();
+      close();
     });
 
     els.btnMap.addEventListener("click", openMap);
